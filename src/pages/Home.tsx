@@ -5,7 +5,7 @@ import { DonationModal } from '@/components/DonationModal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Heart, Users, IndianRupee, Sparkles } from 'lucide-react';
+import { Search, Heart, Users, IndianRupee, Sparkles, Calendar, TrendingUp } from 'lucide-react';
 import lordGaneshImage from '@/assets/lord-ganesh.jpg';
 
 export const Home: React.FC = () => {
@@ -15,10 +15,12 @@ export const Home: React.FC = () => {
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [totalDonations, setTotalDonations] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [dailyReports, setDailyReports] = useState<{[key: string]: number}>({});
 
   useEffect(() => {
     loadPersons();
     loadDonationStats();
+    loadDailyReports();
   }, []);
 
   const loadPersons = () => {
@@ -38,6 +40,21 @@ export const Home: React.FC = () => {
     }
   };
 
+  const loadDailyReports = () => {
+    const stored = localStorage.getItem('donations');
+    if (stored) {
+      const donations: Donation[] = JSON.parse(stored);
+      const dailyData: {[key: string]: number} = {};
+      
+      donations.forEach(donation => {
+        const date = new Date(donation.createdAt).toLocaleDateString('en-IN');
+        dailyData[date] = (dailyData[date] || 0) + donation.amount;
+      });
+      
+      setDailyReports(dailyData);
+    }
+  };
+
   const handleDonate = (person: Person) => {
     setSelectedPerson(person);
     setIsDonationModalOpen(true);
@@ -52,6 +69,7 @@ export const Home: React.FC = () => {
     
     // Update stats
     loadDonationStats();
+    loadDailyReports();
     setIsDonationModalOpen(false);
   };
 
@@ -77,21 +95,21 @@ export const Home: React.FC = () => {
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             <span className="ganesh-gradient bg-clip-text text-transparent">
-              गणेश चतुर्थी
+              Depur Vinayaka Chavithi 2k25
             </span>
             <br />
-            <span className="text-foreground">Chanda Collection</span>
+            <span className="text-foreground">Festival Collection</span>
           </h1>
           
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join us in celebrating Lord Ganesh by contributing to our community collection. 
-            Every donation brings blessings and supports our festive celebrations.
+            Join us in celebrating Ganesh Chaturthi 2025 with daily financial transparency. 
+            Track daily collections and contributions for our community festival.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-8">
             <Badge variant="secondary" className="text-lg py-2 px-4">
               <Sparkles className="w-4 h-4 mr-2" />
-              गणपति बाप्पा मोरया
+              Ganpati Bappa Morya
             </Badge>
           </div>
 
@@ -123,6 +141,42 @@ export const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Daily Financial Reports */}
+      {Object.keys(dailyReports).length > 0 && (
+        <section className="py-12 px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4">
+                <span className="ganesh-gradient bg-clip-text text-transparent">
+                  Daily Financial Reports
+                </span>
+              </h2>
+              <p className="text-muted-foreground">
+                Transparent day-wise collection tracking for Ganesh Chaturthi 2025
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Object.entries(dailyReports)
+                .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
+                .map(([date, amount]) => (
+                  <Card key={date} className="festival-card">
+                    <CardContent className="text-center py-6">
+                      <Calendar className="w-8 h-8 text-primary mx-auto mb-3" />
+                      <div className="text-lg font-semibold mb-2">{date}</div>
+                      <div className="text-2xl font-bold text-primary mb-1">₹{amount}</div>
+                      <div className="text-sm text-muted-foreground">
+                        <TrendingUp className="w-4 h-4 inline mr-1" />
+                        Daily Collection
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Search and Filter */}
       <section className="py-8 px-4">
@@ -159,7 +213,7 @@ export const Home: React.FC = () => {
                   Please check back later or contact an admin.
                 </p>
                 <Badge variant="outline" className="text-sm">
-                  गणपति बाप्पा मोरया - मंगलमूर्ति मोरया
+                  Ganpati Bappa Morya - Mangalmurti Morya
                 </Badge>
               </CardContent>
             </Card>

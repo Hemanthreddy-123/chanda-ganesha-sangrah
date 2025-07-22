@@ -89,7 +89,7 @@ export const AdminDashboard: React.FC = () => {
         <h1 className="text-3xl font-bold ganesh-gradient bg-clip-text text-transparent">
           Welcome, {currentAdmin.name}
         </h1>
-        <p className="text-muted-foreground mt-2">Manage your Ganesh Chaturthi collection</p>
+        <p className="text-muted-foreground mt-2">Manage Depur Vinayaka Chavithi 2k25 Collection</p>
       </div>
 
       {/* Stats Cards */}

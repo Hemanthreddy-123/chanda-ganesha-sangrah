@@ -21,10 +21,10 @@ export const Header: React.FC = () => {
               />
             </div>
             <div>
-              <h1 className="text-2xl font-bold font-devanagari ganesh-gradient bg-clip-text text-transparent">
-                गणेश चंदा संग्रह
+              <h1 className="text-2xl font-bold ganesh-gradient bg-clip-text text-transparent">
+                Depur Vinayaka Chavithi 2k25
               </h1>
-              <p className="text-sm text-muted-foreground">Ganesh Chaturthi Chanda Collection</p>
+              <p className="text-sm text-muted-foreground">Festival Collection Portal</p>
             </div>
           </div>
 
@@ -32,7 +32,7 @@ export const Header: React.FC = () => {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-primary">
               <Heart className="w-5 h-5" />
-              <span className="font-medium">गणपति बाप्पा मोरया</span>
+              <span className="font-medium">Ganpati Bappa Morya</span>
             </div>
             
             {currentAdmin ? (
