@@ -28,6 +28,15 @@ export interface Donation {
   createdAt: Date;
 }
 
+export interface AdminActivity {
+  id: string;
+  adminId: string;
+  adminName: string;
+  action: string;
+  details: string;
+  timestamp: Date;
+}
+
 export interface AuthContextType {
   currentAdmin: Admin | null;
   login: (email: string, password: string) => Promise<boolean>;

@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/button';
 import { LogOut, User, Heart } from 'lucide-react';
 import lordGaneshImage from '@/assets/lord-ganesh.jpg';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  onLoginClick?: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onLoginClick }) => {
   const { currentAdmin, logout } = useAuth();
 
   return (
@@ -52,9 +56,11 @@ export const Header: React.FC = () => {
                 </Button>
               </div>
             ) : (
-              <Button variant="default" size="sm">
-                Admin Login
-              </Button>
+              onLoginClick && (
+                <Button variant="default" size="sm" onClick={onLoginClick}>
+                  Admin Login
+                </Button>
+              )
             )}
           </div>
         </div>

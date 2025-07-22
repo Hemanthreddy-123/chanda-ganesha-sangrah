@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Person, Donation } from '@/types';
 import { PersonCard } from '@/components/PersonCard';
 import { DonationModal } from '@/components/DonationModal';
+import { ContactInfo } from '@/components/ContactInfo';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -230,6 +231,9 @@ export const Home: React.FC = () => {
           )}
         </div>
       </section>
+
+      {/* Contact Information */}
+      <ContactInfo />
 
       {/* Donation Modal */}
       <DonationModal

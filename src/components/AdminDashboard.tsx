@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Person, Donation } from '@/types';
+import { AdminActivityLog, logAdminActivity } from '@/components/AdminActivityLog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -69,6 +70,14 @@ export const AdminDashboard: React.FC = () => {
     setPersons(prev => [...prev, person]);
     setNewPerson({ name: '', address: '', phoneNumber: '' });
     setIsAddPersonOpen(false);
+
+    // Log the activity
+    logAdminActivity(
+      currentAdmin.id,
+      currentAdmin.name,
+      'Added person',
+      `Added ${person.name} from ${person.address} to the collection list`
+    );
 
     toast({
       title: "Person Added",
@@ -270,6 +279,9 @@ export const AdminDashboard: React.FC = () => {
           </Card>
         </div>
       )}
+
+      {/* Admin Activity Log */}
+      <AdminActivityLog />
     </div>
   );
 };

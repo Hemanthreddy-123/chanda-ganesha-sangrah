@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Smartphone, HandCoins, QrCode, User, Phone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { logAdminActivity } from '@/components/AdminActivityLog';
 import QRCode from 'qrcode';
 
 interface DonationModalProps {
@@ -93,6 +94,14 @@ export const DonationModal: React.FC<DonationModalProps> = ({
 
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Log admin activity
+      logAdminActivity(
+        selectedAdminId,
+        selectedAdmin.name,
+        'Received donation',
+        `Received ₹${amount} from ${donorName || 'Anonymous'} for ${person.name} via ${paymentMethod === 'handcash' ? 'Hand Cash' : 'PhonePe/UPI'}`
+      );
 
       onDonationComplete(donation);
       
