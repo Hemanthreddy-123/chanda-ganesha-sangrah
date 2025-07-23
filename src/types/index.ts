@@ -30,6 +30,25 @@ export interface Donation {
   createdAt: Date;
 }
 
+export interface AdminCollection {
+  id: string;
+  adminId: string;
+  adminName: string;
+  amount: number;
+  date: string; // YYYY-MM-DD format
+  createdAt: Date;
+}
+
+export interface AdminExpense {
+  id: string;
+  adminId: string;
+  adminName: string;
+  amount: number;
+  purpose: string;
+  date: string; // YYYY-MM-DD format
+  createdAt: Date;
+}
+
 export interface AdminActivity {
   id: string;
   adminId: string;
