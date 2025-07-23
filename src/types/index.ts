@@ -12,6 +12,8 @@ export interface Person {
   phoneNumber: string;
   adminId: string;
   adminName: string;
+  amountPaid: number;
+  paymentMethod: 'handcash' | 'phonepay';
   createdAt: Date;
 }
 

@@ -6,10 +6,9 @@ import { MapPin, Phone, User, Calendar } from 'lucide-react';
 
 interface PersonCardProps {
   person: Person;
-  onDonate: (person: Person) => void;
 }
 
-export const PersonCard: React.FC<PersonCardProps> = ({ person, onDonate }) => {
+export const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
   return (
     <Card className="festival-card hover:scale-105 transition-all duration-300 hover:blessing-shadow">
       <CardContent className="p-6">
@@ -44,13 +43,11 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person, onDonate }) => {
             </div>
           </div>
 
-          {/* Donate Button */}
-          <Button 
-            onClick={() => onDonate(person)}
-            className="w-full donation-button"
-          >
-            Donate to {person.name}
-          </Button>
+          {/* Contact Info Display */}
+          <div className="text-center p-3 bg-primary/5 rounded-lg">
+            <p className="text-sm text-muted-foreground mb-1">Contact for donations:</p>
+            <p className="font-medium text-primary">{person.phoneNumber}</p>
+          </div>
         </div>
       </CardContent>
     </Card>

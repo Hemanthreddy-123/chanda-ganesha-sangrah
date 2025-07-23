@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Person, Donation } from '@/types';
 import { PersonCard } from '@/components/PersonCard';
-import { DonationModal } from '@/components/DonationModal';
 import { ContactInfo } from '@/components/ContactInfo';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,8 +11,6 @@ import lordGaneshImage from '@/assets/lord-ganesh.jpg';
 export const Home: React.FC = () => {
   const [persons, setPersons] = useState<Person[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
-  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [totalDonations, setTotalDonations] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [dailyReports, setDailyReports] = useState<{[key: string]: number}>({});
@@ -56,23 +53,6 @@ export const Home: React.FC = () => {
     }
   };
 
-  const handleDonate = (person: Person) => {
-    setSelectedPerson(person);
-    setIsDonationModalOpen(true);
-  };
-
-  const handleDonationComplete = (donation: Donation) => {
-    // Save donation to localStorage (in real app, save to Firebase)
-    const stored = localStorage.getItem('donations');
-    const allDonations = stored ? JSON.parse(stored) : [];
-    allDonations.push(donation);
-    localStorage.setItem('donations', JSON.stringify(allDonations));
-    
-    // Update stats
-    loadDonationStats();
-    loadDailyReports();
-    setIsDonationModalOpen(false);
-  };
 
   const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -200,7 +180,6 @@ export const Home: React.FC = () => {
                 <PersonCard
                   key={person.id}
                   person={person}
-                  onDonate={handleDonate}
                 />
               ))}
             </div>
@@ -234,14 +213,6 @@ export const Home: React.FC = () => {
 
       {/* Contact Information */}
       <ContactInfo />
-
-      {/* Donation Modal */}
-      <DonationModal
-        isOpen={isDonationModalOpen}
-        onClose={() => setIsDonationModalOpen(false)}
-        person={selectedPerson}
-        onDonationComplete={handleDonationComplete}
-      />
     </div>
   );
 };

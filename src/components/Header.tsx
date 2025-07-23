@@ -1,7 +1,8 @@
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Heart } from 'lucide-react';
+import { LogOut, User, Heart, IndianRupee } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import lordGaneshImage from '@/assets/lord-ganesh.jpg';
 
 interface HeaderProps {
@@ -10,13 +11,14 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onLoginClick }) => {
   const { currentAdmin, logout } = useAuth();
+  const location = useLocation();
 
   return (
     <header className="bg-card border-b border-border blessing-shadow sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo and Title */}
-          <div className="flex items-center space-x-4">
+          <Link to="/" className="flex items-center space-x-4">
             <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
               <img 
                 src={lordGaneshImage} 
@@ -30,10 +32,25 @@ export const Header: React.FC<HeaderProps> = ({ onLoginClick }) => {
               </h1>
               <p className="text-sm text-muted-foreground">Festival Collection Portal</p>
             </div>
-          </div>
+          </Link>
 
           {/* Navigation */}
           <div className="flex items-center space-x-4">
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-4">
+              <Link 
+                to="/donations" 
+                className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                  location.pathname === '/donations' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'text-muted-foreground hover:text-primary'
+                }`}
+              >
+                <IndianRupee className="w-4 h-4" />
+                <span className="font-medium">Donations</span>
+              </Link>
+            </div>
+            
             <div className="flex items-center space-x-2 text-primary">
               <Heart className="w-5 h-5" />
               <span className="font-medium">Ganpati Bappa Morya</span>

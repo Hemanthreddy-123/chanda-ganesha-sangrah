@@ -20,6 +20,8 @@ export const AdminDashboard: React.FC = () => {
     name: '',
     address: '',
     phoneNumber: '',
+    amountPaid: '',
+    paymentMethod: 'handcash' as 'handcash' | 'phonepay',
   });
   const { toast } = useToast();
 
@@ -58,6 +60,8 @@ export const AdminDashboard: React.FC = () => {
       phoneNumber: newPerson.phoneNumber,
       adminId: currentAdmin.id,
       adminName: currentAdmin.name,
+      amountPaid: parseFloat(newPerson.amountPaid),
+      paymentMethod: newPerson.paymentMethod,
       createdAt: new Date(),
     };
 
@@ -68,15 +72,15 @@ export const AdminDashboard: React.FC = () => {
     localStorage.setItem('persons', JSON.stringify(allPersons));
 
     setPersons(prev => [...prev, person]);
-    setNewPerson({ name: '', address: '', phoneNumber: '' });
+    setNewPerson({ name: '', address: '', phoneNumber: '', amountPaid: '', paymentMethod: 'handcash' });
     setIsAddPersonOpen(false);
 
     // Log the activity
     logAdminActivity(
       currentAdmin.id,
       currentAdmin.name,
-      'Added person',
-      `Added ${person.name} from ${person.address} to the collection list`
+      'Added person with payment',
+      `Added ${person.name} from ${person.address} with ₹${person.amountPaid} payment via ${person.paymentMethod}`
     );
 
     toast({
@@ -200,6 +204,30 @@ export const AdminDashboard: React.FC = () => {
                   placeholder="Enter phone number"
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="amount">Amount Paid *</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  value={newPerson.amountPaid}
+                  onChange={(e) => setNewPerson(prev => ({ ...prev, amountPaid: e.target.value }))}
+                  placeholder="Enter amount paid"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="paymentMethod">Payment Method *</Label>
+                <select 
+                  id="paymentMethod"
+                  value={newPerson.paymentMethod}
+                  onChange={(e) => setNewPerson(prev => ({ ...prev, paymentMethod: e.target.value as 'handcash' | 'phonepay' }))}
+                  className="w-full px-3 py-2 border border-input bg-background rounded-md"
+                  required
+                >
+                  <option value="handcash">Hand Cash</option>
+                  <option value="phonepay">PhonePe/UPI</option>
+                </select>
               </div>
               <Button type="submit" className="w-full donation-button">
                 Add Person
