@@ -14,7 +14,248 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_activities: {
+        Row: {
+          action: string
+          admin_id: string
+          admin_name: string
+          details: string
+          id: string
+          timestamp: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          admin_name: string
+          details: string
+          id?: string
+          timestamp?: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          admin_name?: string
+          details?: string
+          id?: string
+          timestamp?: string
+        }
+        Relationships: []
+      }
+      admin_collections: {
+        Row: {
+          admin_id: string
+          admin_name: string
+          amount: number
+          created_at: string
+          date: string
+          id: string
+        }
+        Insert: {
+          admin_id: string
+          admin_name: string
+          amount: number
+          created_at?: string
+          date: string
+          id?: string
+        }
+        Update: {
+          admin_id?: string
+          admin_name?: string
+          amount?: number
+          created_at?: string
+          date?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      admin_expenses: {
+        Row: {
+          admin_id: string
+          admin_name: string
+          amount: number
+          created_at: string
+          date: string
+          id: string
+          purpose: string
+        }
+        Insert: {
+          admin_id: string
+          admin_name: string
+          amount: number
+          created_at?: string
+          date: string
+          id?: string
+          purpose: string
+        }
+        Update: {
+          admin_id?: string
+          admin_name?: string
+          amount?: number
+          created_at?: string
+          date?: string
+          id?: string
+          purpose?: string
+        }
+        Relationships: []
+      }
+      announcements: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string
+          id: string
+          is_active: boolean | null
+          priority: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by: string
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          donor_name: string | null
+          donor_phone: string | null
+          id: string
+          payment_method: string
+          person_id: string | null
+          person_name: string
+          receiving_admin_id: string
+          receiving_admin_name: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          donor_name?: string | null
+          donor_phone?: string | null
+          id?: string
+          payment_method: string
+          person_id?: string | null
+          person_name: string
+          receiving_admin_id: string
+          receiving_admin_name: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          donor_name?: string | null
+          donor_phone?: string | null
+          id?: string
+          payment_method?: string
+          person_id?: string | null
+          person_name?: string
+          receiving_admin_id?: string
+          receiving_admin_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "donations_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "persons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      persons: {
+        Row: {
+          address: string
+          admin_id: string
+          admin_name: string
+          amount_paid: number | null
+          created_at: string
+          id: string
+          name: string
+          payment_method: string | null
+          phone_number: string
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          admin_id: string
+          admin_name: string
+          amount_paid?: number | null
+          created_at?: string
+          id?: string
+          name: string
+          payment_method?: string | null
+          phone_number: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          admin_id?: string
+          admin_name?: string
+          amount_paid?: number | null
+          created_at?: string
+          id?: string
+          name?: string
+          payment_method?: string | null
+          phone_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          last_login_at: string | null
+          name: string
+          phone_number: string | null
+          role: string | null
+          total_login_time: unknown | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          last_login_at?: string | null
+          name: string
+          phone_number?: string | null
+          role?: string | null
+          total_login_time?: unknown | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          last_login_at?: string | null
+          name?: string
+          phone_number?: string | null
+          role?: string | null
+          total_login_time?: unknown | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
