@@ -1,16 +1,14 @@
 import React from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/SupabaseAuthContext';
 import { Button } from '@/components/ui/button';
 import { LogOut, User, Heart, IndianRupee } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import lordGaneshImage from '@/assets/lord-ganesh.jpg';
 
-interface HeaderProps {
-  onLoginClick?: () => void;
-}
+interface HeaderProps {}
 
-export const Header: React.FC<HeaderProps> = ({ onLoginClick }) => {
-  const { currentAdmin, logout } = useAuth();
+export const Header: React.FC<HeaderProps> = () => {
+  const { user, profile, signOut } = useAuth();
   const location = useLocation();
 
   return (
@@ -56,16 +54,16 @@ export const Header: React.FC<HeaderProps> = ({ onLoginClick }) => {
               <span className="font-medium">Ganpati Bappa Morya</span>
             </div>
             
-            {currentAdmin ? (
+            {user && profile ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2">
                   <User className="w-4 h-4 text-primary" />
-                  <span className="font-medium">{currentAdmin.name}</span>
+                  <span className="font-medium">{profile.name}</span>
                 </div>
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={logout}
+                  onClick={signOut}
                   className="hover:bg-destructive hover:text-destructive-foreground"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
@@ -73,11 +71,13 @@ export const Header: React.FC<HeaderProps> = ({ onLoginClick }) => {
                 </Button>
               </div>
             ) : (
-              onLoginClick && (
-                <Button variant="default" size="sm" onClick={onLoginClick}>
-                  Admin Login
-                </Button>
-              )
+              <Button 
+                variant="default" 
+                size="sm" 
+                onClick={() => window.location.href = '/auth'}
+              >
+                Admin Login
+              </Button>
             )}
           </div>
         </div>

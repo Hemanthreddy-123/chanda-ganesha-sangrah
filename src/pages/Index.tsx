@@ -1,21 +1,38 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/SupabaseAuthContext';
 import { Header } from '@/components/Header';
 import { Home } from '@/pages/Home';
 import { AdminDashboard } from '@/components/AdminDashboard';
-import { LoginModal } from '@/components/LoginModal';
 import { Button } from '@/components/ui/button';
+import { Navigate } from 'react-router-dom';
+import CurrentTime from '@/components/CurrentTime';
+import ScrollingAnnouncements from '@/components/ScrollingAnnouncements';
 
 const Index = () => {
-  const { currentAdmin } = useAuth();
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { user, profile, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onLoginClick={() => setIsLoginModalOpen(true)} />
+      {/* Scrolling Announcements */}
+      <ScrollingAnnouncements />
+      
+      {/* Current Time */}
+      <div className="container mx-auto px-4 py-3">
+        <CurrentTime />
+      </div>
+      
+      <Header />
       
       <main>
-        {currentAdmin ? (
+        {user && profile ? (
           <div className="container mx-auto px-4 py-8">
             <AdminDashboard />
           </div>
@@ -24,7 +41,7 @@ const Index = () => {
             <Home />
             <div className="fixed bottom-8 right-8">
               <Button 
-                onClick={() => setIsLoginModalOpen(true)}
+                onClick={() => window.location.href = '/auth'}
                 className="donation-button shadow-lg"
                 size="lg"
               >
@@ -34,11 +51,6 @@ const Index = () => {
           </>
         )}
       </main>
-
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
-      />
     </div>
   );
 };

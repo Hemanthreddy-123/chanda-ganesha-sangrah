@@ -1,55 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Person, Donation } from '@/types';
+import { Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { PersonCard } from '@/components/PersonCard';
 import { ContactInfo } from '@/components/ContactInfo';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Search, Heart, Users, IndianRupee, Sparkles, Calendar, TrendingUp } from 'lucide-react';
+import FinancialSummary from '@/components/FinancialSummary';
+import { supabase } from '@/integrations/supabase/client';
+import { Person } from '@/types/supabase';
 import lordGaneshImage from '@/assets/lord-ganesh.jpg';
 
-export const Home: React.FC = () => {
+export const Home = () => {
   const [persons, setPersons] = useState<Person[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [totalDonations, setTotalDonations] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
-  const [dailyReports, setDailyReports] = useState<{[key: string]: number}>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadPersons();
-    loadDonationStats();
-    loadDailyReports();
   }, []);
 
-  const loadPersons = () => {
-    // In a real app, this would be a Firebase query
-    const stored = localStorage.getItem('persons');
-    if (stored) {
-      setPersons(JSON.parse(stored));
-    }
-  };
+  const loadPersons = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('persons')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-  const loadDonationStats = () => {
-    const stored = localStorage.getItem('donations');
-    if (stored) {
-      const donations: Donation[] = JSON.parse(stored);
-      setTotalDonations(donations.length);
-      setTotalAmount(donations.reduce((sum, d) => sum + d.amount, 0));
-    }
-  };
+      if (error) {
+        console.error('Error loading persons:', error);
+        return;
+      }
 
-  const loadDailyReports = () => {
-    const stored = localStorage.getItem('donations');
-    if (stored) {
-      const donations: Donation[] = JSON.parse(stored);
-      const dailyData: {[key: string]: number} = {};
-      
-      donations.forEach(donation => {
-        const date = new Date(donation.createdAt).toLocaleDateString('en-IN');
-        dailyData[date] = (dailyData[date] || 0) + donation.amount;
-      });
-      
-      setDailyReports(dailyData);
+      setPersons((data || []) as Person[]);
+    } catch (error) {
+      console.error('Error loading persons:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,112 +41,69 @@ export const Home: React.FC = () => {
   const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     person.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    person.adminName.toLowerCase().includes(searchTerm.toLowerCase())
+    person.admin_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-20 px-4 text-center">
-        <div className="absolute inset-0 sacred-gradient opacity-10"></div>
-        <div className="relative z-10 max-w-4xl mx-auto">
+      <section className="hero-gradient text-white py-20 px-4 text-center relative overflow-hidden">
+        <div className="container mx-auto relative z-10">
           <div className="mb-8">
             <img 
               src={lordGaneshImage} 
               alt="Lord Ganesh" 
-              className="w-32 h-24 object-cover rounded-xl mx-auto mb-6 divine-shadow"
+              className="w-32 h-32 mx-auto rounded-full border-4 border-white shadow-2xl object-cover mb-6"
             />
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            <span className="ganesh-gradient bg-clip-text text-transparent">
-              Depur Vinayaka Chavithi 2k25
-            </span>
-            <br />
-            <span className="text-foreground">Festival Collection</span>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-shadow">
+            Depur Vinayaka Chavithi 2k25
           </h1>
-          
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join us in celebrating Ganesh Chaturthi 2025 with daily financial transparency. 
-            Track daily collections and contributions for our community festival.
+          <p className="text-xl md:text-2xl mb-8 opacity-90">
+            Festival Collection & Management System
           </p>
-
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <Badge variant="secondary" className="text-lg py-2 px-4">
-              <Sparkles className="w-4 h-4 mr-2" />
-              Ganpati Bappa Morya
-            </Badge>
+          
+          <div className="mt-12">
+            <p className="text-lg opacity-90 mb-4">
+              जय श्री गणेश! Welcome to our divine festival celebration
+            </p>
+            <p className="text-sm opacity-75">
+              Managing collections with transparency and devotion
+            </p>
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
-            <Card className="festival-card">
-              <CardContent className="text-center py-6">
-                <Users className="w-8 h-8 text-primary mx-auto mb-2" />
-                <div className="text-2xl font-bold">{persons.length}</div>
-                <div className="text-sm text-muted-foreground">People Listed</div>
-              </CardContent>
-            </Card>
-            
-            <Card className="festival-card">
-              <CardContent className="text-center py-6">
-                <Heart className="w-8 h-8 text-primary mx-auto mb-2" />
-                <div className="text-2xl font-bold">{totalDonations}</div>
-                <div className="text-sm text-muted-foreground">Donations Made</div>
-              </CardContent>
-            </Card>
-            
-            <Card className="festival-card">
-              <CardContent className="text-center py-6">
-                <IndianRupee className="w-8 h-8 text-primary mx-auto mb-2" />
-                <div className="text-2xl font-bold">₹{totalAmount}</div>
-                <div className="text-sm text-muted-foreground">Total Collected</div>
-              </CardContent>
-            </Card>
-          </div>
+        </div>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-10">
+          <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full"></div>
+          <div className="absolute top-32 right-16 w-16 h-16 border-2 border-white rounded-full"></div>
+          <div className="absolute bottom-20 left-20 w-12 h-12 border-2 border-white rounded-full"></div>
+          <div className="absolute bottom-10 right-10 w-24 h-24 border-2 border-white rounded-full"></div>
         </div>
       </section>
 
-      {/* Daily Financial Reports */}
-      {Object.keys(dailyReports).length > 0 && (
-        <section className="py-12 px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">
-                <span className="ganesh-gradient bg-clip-text text-transparent">
-                  Daily Financial Reports
-                </span>
-              </h2>
-              <p className="text-muted-foreground">
-                Transparent day-wise collection tracking for Ganesh Chaturthi 2025
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Object.entries(dailyReports)
-                .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
-                .map(([date, amount]) => (
-                  <Card key={date} className="festival-card">
-                    <CardContent className="text-center py-6">
-                      <Calendar className="w-8 h-8 text-primary mx-auto mb-3" />
-                      <div className="text-lg font-semibold mb-2">{date}</div>
-                      <div className="text-2xl font-bold text-primary mb-1">₹{amount}</div>
-                      <div className="text-sm text-muted-foreground">
-                        <TrendingUp className="w-4 h-4 inline mr-1" />
-                        Daily Collection
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* Enhanced Financial Summary */}
+      <section className="py-16 px-4 bg-muted/30">
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12 text-primary">
+            Financial Overview
+          </h2>
+          <FinancialSummary />
+        </div>
+      </section>
 
       {/* Search and Filter */}
       <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="relative mb-8">
+        <div className="container mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-primary mb-4">Community Members</h2>
+            <p className="text-muted-foreground">
+              Our festival participants and their contributions
+            </p>
+          </div>
+          
+          <div className="relative mb-8 max-w-md mx-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <Input
               type="text"
@@ -174,7 +115,15 @@ export const Home: React.FC = () => {
           </div>
 
           {/* People Grid */}
-          {filteredPersons.length > 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-muted rounded-lg h-48"></div>
+                </div>
+              ))}
+            </div>
+          ) : filteredPersons.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPersons.map((person) => (
                 <PersonCard
@@ -184,29 +133,25 @@ export const Home: React.FC = () => {
               ))}
             </div>
           ) : persons.length === 0 ? (
-            <Card className="festival-card">
-              <CardContent className="text-center py-16">
-                <Users className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
-                <h3 className="text-2xl font-semibold mb-4">No People Listed Yet</h3>
-                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  The admin team hasn't added any people to the collection list yet. 
-                  Please check back later or contact an admin.
-                </p>
-                <Badge variant="outline" className="text-sm">
-                  Ganpati Bappa Morya - Mangalmurti Morya
-                </Badge>
-              </CardContent>
-            </Card>
+            <div className="text-center py-16">
+              <div className="text-6xl mb-4">🎭</div>
+              <h3 className="text-2xl font-semibold mb-4">No People Listed Yet</h3>
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                The admin team hasn't added any people to the collection list yet. 
+                Please check back later or contact an admin.
+              </p>
+              <div className="text-primary font-semibold">
+                Ganpati Bappa Morya - Mangalmurti Morya
+              </div>
+            </div>
           ) : (
-            <Card className="festival-card">
-              <CardContent className="text-center py-16">
-                <Search className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
-                <h3 className="text-2xl font-semibold mb-4">No Results Found</h3>
-                <p className="text-muted-foreground">
-                  No people found matching your search criteria. Try a different search term.
-                </p>
-              </CardContent>
-            </Card>
+            <div className="text-center py-16">
+              <Search className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold mb-4">No Results Found</h3>
+              <p className="text-muted-foreground">
+                No people found matching your search criteria. Try a different search term.
+              </p>
+            </div>
           )}
         </div>
       </section>
