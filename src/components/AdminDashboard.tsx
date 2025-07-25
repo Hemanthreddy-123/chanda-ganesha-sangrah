@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { Person, Donation } from '@/types';
+import { useAuth } from '@/context/SupabaseAuthContext';
+import { Person, Donation } from '@/types/supabase';
 import { AdminActivityLog, logAdminActivity } from '@/components/AdminActivityLog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import { Plus, Users, IndianRupee, TrendingUp, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export const AdminDashboard: React.FC = () => {
-  const { currentAdmin } = useAuth();
+  const { profile } = useAuth();
   const [persons, setPersons] = useState<Person[]>([]);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [isAddPersonOpen, setIsAddPersonOpen] = useState(false);
@@ -29,14 +29,14 @@ export const AdminDashboard: React.FC = () => {
   useEffect(() => {
     loadPersons();
     loadDonations();
-  }, [currentAdmin]);
+  }, [profile]);
 
   const loadPersons = () => {
     // In a real app, this would be a Firebase query
     const stored = localStorage.getItem('persons');
     if (stored) {
       const allPersons = JSON.parse(stored);
-      setPersons(allPersons.filter((p: Person) => p.adminId === currentAdmin?.id));
+      setPersons(allPersons.filter((p: Person) => p.admin_id === profile?.user_id));
     }
   };
 
@@ -45,24 +45,25 @@ export const AdminDashboard: React.FC = () => {
     const stored = localStorage.getItem('donations');
     if (stored) {
       const allDonations = JSON.parse(stored);
-      setDonations(allDonations.filter((d: Donation) => d.receivingAdminId === currentAdmin?.id));
+      setDonations(allDonations.filter((d: Donation) => d.receiving_admin_id === profile?.user_id));
     }
   };
 
   const handleAddPerson = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentAdmin) return;
+    if (!profile) return;
 
     const person: Person = {
       id: `person_${Date.now()}`,
       name: newPerson.name,
       address: newPerson.address,
-      phoneNumber: newPerson.phoneNumber,
-      adminId: currentAdmin.id,
-      adminName: currentAdmin.name,
-      amountPaid: parseFloat(newPerson.amountPaid),
-      paymentMethod: newPerson.paymentMethod,
-      createdAt: new Date(),
+      phone_number: newPerson.phoneNumber,
+      admin_id: profile.user_id,
+      admin_name: profile.name,
+      amount_paid: parseFloat(newPerson.amountPaid),
+      payment_method: newPerson.paymentMethod,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     // Save to localStorage (in real app, save to Firebase)
@@ -77,10 +78,10 @@ export const AdminDashboard: React.FC = () => {
 
     // Log the activity
     logAdminActivity(
-      currentAdmin.id,
-      currentAdmin.name,
+      profile.user_id,
+      profile.name,
       'Added person with payment',
-      `Added ${person.name} from ${person.address} with ₹${person.amountPaid} payment via ${person.paymentMethod}`
+      `Added ${person.name} from ${person.address} with ₹${person.amount_paid} payment via ${person.payment_method}`
     );
 
     toast({
@@ -90,17 +91,17 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const totalDonations = donations.reduce((sum, d) => sum + d.amount, 0);
-  const handCashTotal = donations.filter(d => d.paymentMethod === 'handcash').reduce((sum, d) => sum + d.amount, 0);
-  const phonePeTotal = donations.filter(d => d.paymentMethod === 'phonepay').reduce((sum, d) => sum + d.amount, 0);
+  const handCashTotal = donations.filter(d => d.payment_method === 'handcash').reduce((sum, d) => sum + d.amount, 0);
+  const phonePeTotal = donations.filter(d => d.payment_method === 'phonepay').reduce((sum, d) => sum + d.amount, 0);
 
-  if (!currentAdmin) return null;
+  if (!profile) return null;
 
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
       <div className="text-center py-8">
         <h1 className="text-3xl font-bold ganesh-gradient bg-clip-text text-transparent">
-          Welcome, {currentAdmin.name}
+          Welcome, {profile.name}
         </h1>
         <p className="text-muted-foreground mt-2">Manage Depur Vinayaka Chavithi 2k25 Collection</p>
       </div>
@@ -246,10 +247,10 @@ export const AdminDashboard: React.FC = () => {
               <CardDescription>{person.address}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-3">{person.phoneNumber}</p>
+              <p className="text-sm text-muted-foreground mb-3">{person.phone_number}</p>
               <div className="flex justify-between items-center">
                 <Badge variant="secondary">
-                  Added {new Date(person.createdAt).toLocaleDateString()}
+                  Added {new Date(person.created_at).toLocaleDateString()}
                 </Badge>
                 <Button variant="outline" size="sm">
                   <Eye className="w-4 h-4 mr-2" />
@@ -288,15 +289,15 @@ export const AdminDashboard: React.FC = () => {
                   <div key={donation.id} className={`p-4 ${index !== donations.length - 1 ? 'border-b border-border' : ''}`}>
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="font-medium">{donation.personName}</p>
+                        <p className="font-medium">{donation.person_name}</p>
                         <p className="text-sm text-muted-foreground">
-                          by {donation.donorName || 'Anonymous'}
+                          by {donation.donor_name || 'Anonymous'}
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-primary">₹{donation.amount}</p>
-                        <Badge variant={donation.paymentMethod === 'handcash' ? 'default' : 'secondary'}>
-                          {donation.paymentMethod === 'handcash' ? 'Hand Cash' : 'PhonePe'}
+                        <Badge variant={donation.payment_method === 'handcash' ? 'default' : 'secondary'}>
+                          {donation.payment_method === 'handcash' ? 'Hand Cash' : 'PhonePe'}
                         </Badge>
                       </div>
                     </div>

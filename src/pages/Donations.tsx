@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Person, Donation, AdminCollection, AdminExpense } from '@/types';
+import { Person, Donation, AdminCollection, AdminExpense } from '@/types/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -54,7 +54,7 @@ export const Donations: React.FC = () => {
       // Calculate daily reports from donations
       const dailyData: {[key: string]: number} = {};
       donationData.forEach(donation => {
-        const date = new Date(donation.createdAt).toLocaleDateString('en-IN');
+        const date = new Date(donation.created_at).toLocaleDateString('en-IN');
         dailyData[date] = (dailyData[date] || 0) + donation.amount;
       });
       setDailyReports(dailyData);
@@ -74,14 +74,14 @@ export const Donations: React.FC = () => {
   };
 
   // Calculate totals from persons (actual payments)
-  const totalFromPersons = persons.reduce((sum, person) => sum + (person.amountPaid || 0), 0);
-  const handCashFromPersons = persons.filter(p => p.paymentMethod === 'handcash').reduce((sum, p) => sum + (p.amountPaid || 0), 0);
-  const phonePeFromPersons = persons.filter(p => p.paymentMethod === 'phonepay').reduce((sum, p) => sum + (p.amountPaid || 0), 0);
+  const totalFromPersons = persons.reduce((sum, person) => sum + (person.amount_paid || 0), 0);
+  const handCashFromPersons = persons.filter(p => p.payment_method === 'handcash').reduce((sum, p) => sum + (p.amount_paid || 0), 0);
+  const phonePeFromPersons = persons.filter(p => p.payment_method === 'phonepay').reduce((sum, p) => sum + (p.amount_paid || 0), 0);
 
   // Calculate totals from donations (additional donations)
   const totalFromDonations = donations.reduce((sum, d) => sum + d.amount, 0);
-  const handCashFromDonations = donations.filter(d => d.paymentMethod === 'handcash').reduce((sum, d) => sum + d.amount, 0);
-  const phonePeFromDonations = donations.filter(d => d.paymentMethod === 'phonepay').reduce((sum, d) => sum + d.amount, 0);
+  const handCashFromDonations = donations.filter(d => d.payment_method === 'handcash').reduce((sum, d) => sum + d.amount, 0);
+  const phonePeFromDonations = donations.filter(d => d.payment_method === 'phonepay').reduce((sum, d) => sum + d.amount, 0);
 
   // Calculate admin collections and expenses
   const totalAdminCollections = adminCollections.reduce((sum, c) => sum + c.amount, 0);
@@ -96,33 +96,33 @@ export const Donations: React.FC = () => {
   // Group admin data
   const adminData = new Map();
   adminCollections.forEach(collection => {
-    if (!adminData.has(collection.adminId)) {
-      adminData.set(collection.adminId, {
-        adminId: collection.adminId,
-        adminName: collection.adminName,
+    if (!adminData.has(collection.admin_id)) {
+      adminData.set(collection.admin_id, {
+        adminId: collection.admin_id,
+        adminName: collection.admin_name,
         totalCollected: 0,
         totalExpenses: 0
       });
     }
-    adminData.get(collection.adminId).totalCollected += collection.amount;
+    adminData.get(collection.admin_id).totalCollected += collection.amount;
   });
 
   adminExpenses.forEach(expense => {
-    if (!adminData.has(expense.adminId)) {
-      adminData.set(expense.adminId, {
-        adminId: expense.adminId,
-        adminName: expense.adminName,
+    if (!adminData.has(expense.admin_id)) {
+      adminData.set(expense.admin_id, {
+        adminId: expense.admin_id,
+        adminName: expense.admin_name,
         totalCollected: 0,
         totalExpenses: 0
       });
     }
-    adminData.get(expense.adminId).totalExpenses += expense.amount;
+    adminData.get(expense.admin_id).totalExpenses += expense.amount;
   });
 
   const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     person.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    person.adminName.toLowerCase().includes(searchTerm.toLowerCase())
+    person.admin_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -314,25 +314,25 @@ export const Donations: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Amount:</span>
-                      <span className="text-lg font-bold text-primary">₹{person.amountPaid || 0}</span>
+                      <span className="text-lg font-bold text-primary">₹{person.amount_paid || 0}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Method:</span>
-                      <Badge variant={person.paymentMethod === 'handcash' ? 'default' : 'secondary'}>
-                        {person.paymentMethod === 'handcash' ? 'Hand Cash' : 'PhonePe'}
+                      <Badge variant={person.payment_method === 'handcash' ? 'default' : 'secondary'}>
+                        {person.payment_method === 'handcash' ? 'Hand Cash' : 'PhonePe'}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Phone:</span>
-                      <span className="text-sm">{person.phoneNumber}</span>
+                      <span className="text-sm">{person.phone_number}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Added by:</span>
-                      <span className="text-sm">{person.adminName}</span>
+                      <span className="text-sm">{person.admin_name}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Date:</span>
-                      <span className="text-sm">{new Date(person.createdAt).toLocaleDateString()}</span>
+                      <span className="text-sm">{new Date(person.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -353,8 +353,8 @@ export const Donations: React.FC = () => {
               {donations.map((donation) => (
                 <Card key={donation.id} className="festival-card">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">{donation.donorName || 'Anonymous'}</CardTitle>
-                    <CardDescription>Donated to {donation.personName}</CardDescription>
+                    <CardTitle className="text-lg">{donation.donor_name || 'Anonymous'}</CardTitle>
+                    <CardDescription>Donated to {donation.person_name}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
@@ -364,17 +364,17 @@ export const Donations: React.FC = () => {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Method:</span>
-                        <Badge variant={donation.paymentMethod === 'handcash' ? 'default' : 'secondary'}>
-                          {donation.paymentMethod === 'handcash' ? 'Hand Cash' : 'PhonePe'}
+                        <Badge variant={donation.payment_method === 'handcash' ? 'default' : 'secondary'}>
+                          {donation.payment_method === 'handcash' ? 'Hand Cash' : 'PhonePe'}
                         </Badge>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Received by:</span>
-                        <span className="text-sm">{donation.receivingAdminName}</span>
+                        <span className="text-sm">{donation.receiving_admin_name}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Date:</span>
-                        <span className="text-sm">{new Date(donation.createdAt).toLocaleDateString()}</span>
+                        <span className="text-sm">{new Date(donation.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -394,7 +394,7 @@ export const Donations: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {adminExpenses
-                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                 .map((expense) => (
                   <Card key={expense.id} className="festival-card">
                     <CardHeader className="pb-3">
@@ -405,7 +405,7 @@ export const Donations: React.FC = () => {
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-muted-foreground">Spent by:</span>
-                          <span className="text-sm">{expense.adminName}</span>
+                          <span className="text-sm">{expense.admin_name}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-muted-foreground">Date:</span>

@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from '@/context/AuthContext';
-import { AdminExpense } from '@/types';
+import { useAuth } from '@/context/SupabaseAuthContext';
+import { AdminExpense } from '@/types/supabase';
 import { toast } from 'sonner';
 
 interface AddExpenseModalProps {
@@ -19,7 +19,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   onClose,
   onExpenseAdded
 }) => {
-  const { currentAdmin } = useAuth();
+  const { profile } = useAuth();
   const [amount, setAmount] = useState('');
   const [purpose, setPurpose] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -28,7 +28,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!currentAdmin) {
+    if (!profile) {
       toast.error('You must be logged in to add an expense');
       return;
     }
@@ -48,12 +48,12 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
     try {
       const expense: AdminExpense = {
         id: Math.random().toString(36).substr(2, 9),
-        adminId: currentAdmin.id,
-        adminName: currentAdmin.name,
+        admin_id: profile.user_id,
+        admin_name: profile.name,
         amount: parseFloat(amount),
         purpose: purpose.trim(),
         date,
-        createdAt: new Date()
+        created_at: new Date().toISOString()
       };
 
       // Save to localStorage

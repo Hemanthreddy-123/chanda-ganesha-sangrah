@@ -3,8 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/context/AuthContext';
-import { AdminCollection } from '@/types';
+import { useAuth } from '@/context/SupabaseAuthContext';
+import { AdminCollection } from '@/types/supabase';
 import { toast } from 'sonner';
 
 interface AddCollectionModalProps {
@@ -18,7 +18,7 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
   onClose,
   onCollectionAdded
 }) => {
-  const { currentAdmin } = useAuth();
+  const { profile } = useAuth();
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,7 +26,7 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!currentAdmin) {
+    if (!profile) {
       toast.error('You must be logged in to add a collection');
       return;
     }
@@ -41,11 +41,11 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
     try {
       const collection: AdminCollection = {
         id: Math.random().toString(36).substr(2, 9),
-        adminId: currentAdmin.id,
-        adminName: currentAdmin.name,
+        admin_id: profile.user_id,
+        admin_name: profile.name,
         amount: parseFloat(amount),
         date,
-        createdAt: new Date()
+        created_at: new Date().toISOString()
       };
 
       // Save to localStorage
