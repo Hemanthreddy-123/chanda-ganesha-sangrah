@@ -98,6 +98,30 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_settings: {
+        Row: {
+          created_at: string
+          id: string
+          setting_name: string
+          setting_value: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          setting_name: string
+          setting_value: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          setting_name?: string
+          setting_value?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           content: string
@@ -219,6 +243,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           created_at: string
           email: string
           id: string
@@ -226,11 +252,14 @@ export type Database = {
           name: string
           phone_number: string | null
           role: string | null
+          status: string | null
           total_login_time: unknown | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           email: string
           id?: string
@@ -238,11 +267,14 @@ export type Database = {
           name: string
           phone_number?: string | null
           role?: string | null
+          status?: string | null
           total_login_time?: unknown | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           email?: string
           id?: string
@@ -250,6 +282,7 @@ export type Database = {
           name?: string
           phone_number?: string | null
           role?: string | null
+          status?: string | null
           total_login_time?: unknown | null
           updated_at?: string
           user_id?: string
@@ -261,7 +294,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      approve_admin: {
+        Args: { target_user_id: string; approver_id: string }
+        Returns: boolean
+      }
+      get_approved_admin_count: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
