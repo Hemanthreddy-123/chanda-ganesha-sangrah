@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AddCollectionModal } from '@/components/AddCollectionModal';
 import { AddExpenseModal } from '@/components/AddExpenseModal';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/SupabaseAuthContext';
 import { 
   IndianRupee, 
   TrendingUp, 
@@ -23,7 +23,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 export const Donations: React.FC = () => {
-  const { currentAdmin } = useAuth();
+  const { profile } = useAuth();
   const [persons, setPersons] = useState<Person[]>([]);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [adminCollections, setAdminCollections] = useState<AdminCollection[]>([]);
@@ -147,7 +147,7 @@ export const Donations: React.FC = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            {currentAdmin && (
+            {profile && (
               <>
                 <Button onClick={() => setIsCollectionModalOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
