@@ -289,6 +289,54 @@ export type Database = {
         }
         Relationships: []
       }
+      schedules: {
+        Row: {
+          created_at: string
+          created_by: string
+          date: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          location: string | null
+          organizer: string | null
+          priority: number | null
+          time_end: string | null
+          time_start: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          date: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          organizer?: string | null
+          priority?: number | null
+          time_end?: string | null
+          time_start?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          date?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          organizer?: string | null
+          priority?: number | null
+          time_end?: string | null
+          time_start?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

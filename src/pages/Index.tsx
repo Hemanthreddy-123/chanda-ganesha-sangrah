@@ -4,12 +4,13 @@ import { Header } from '@/components/Header';
 import { Home } from '@/pages/Home';
 import { AdminDashboard } from '@/components/AdminDashboard';
 import { Button } from '@/components/ui/button';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CurrentTime from '@/components/CurrentTime';
 import ScrollingAnnouncements from '@/components/ScrollingAnnouncements';
 
 const Index = () => {
   const { user, profile, loading } = useAuth();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -41,7 +42,7 @@ const Index = () => {
             <Home />
             <div className="fixed bottom-8 right-8">
               <Button 
-                onClick={() => window.location.href = '/auth'}
+                onClick={() => navigate('/auth')}
                 className="donation-button shadow-lg"
                 size="lg"
               >

@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { PersonCard } from '@/components/PersonCard';
 import { ContactInfo } from '@/components/ContactInfo';
 import FinancialSummary from '@/components/FinancialSummary';
+import ScheduleManagement from '@/components/ScheduleManagement';
 import { supabase } from '@/integrations/supabase/client';
 import { Person } from '@/types/supabase';
 import lordGaneshImage from '@/assets/lord-ganesh.jpg';
@@ -90,6 +91,13 @@ export const Home = () => {
             Financial Overview
           </h2>
           <FinancialSummary />
+        </div>
+      </section>
+
+      {/* Schedule Management */}
+      <section className="py-16 px-4">
+        <div className="container mx-auto">
+          <ScheduleManagement />
         </div>
       </section>
 

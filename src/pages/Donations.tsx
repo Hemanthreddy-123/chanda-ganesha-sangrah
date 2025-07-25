@@ -125,6 +125,95 @@ export const Donations: React.FC = () => {
     person.admin_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const exportReport = () => {
+    // Create CSV content
+    const csvHeaders = [
+      'Date',
+      'Type',
+      'Name/Purpose',
+      'Amount',
+      'Payment Method',
+      'Admin',
+      'Phone',
+      'Address'
+    ];
+
+    const csvRows = [];
+    
+    // Add persons data
+    persons.forEach(person => {
+      csvRows.push([
+        new Date(person.created_at).toLocaleDateString('en-IN'),
+        'Member Payment',
+        person.name,
+        person.amount_paid || 0,
+        person.payment_method === 'handcash' ? 'Hand Cash' : 'PhonePe',
+        person.admin_name,
+        person.phone_number,
+        person.address
+      ]);
+    });
+
+    // Add donations data
+    donations.forEach(donation => {
+      csvRows.push([
+        new Date(donation.created_at).toLocaleDateString('en-IN'),
+        'Donation',
+        donation.donor_name || 'Anonymous',
+        donation.amount,
+        donation.payment_method === 'handcash' ? 'Hand Cash' : 'PhonePe',
+        donation.receiving_admin_name,
+        donation.donor_phone || '',
+        ''
+      ]);
+    });
+
+    // Add admin collections
+    adminCollections.forEach(collection => {
+      csvRows.push([
+        new Date(collection.created_at).toLocaleDateString('en-IN'),
+        'Admin Collection',
+        'Direct Collection',
+        collection.amount,
+        'Mixed',
+        collection.admin_name,
+        '',
+        ''
+      ]);
+    });
+
+    // Add admin expenses
+    adminExpenses.forEach(expense => {
+      csvRows.push([
+        new Date(expense.created_at).toLocaleDateString('en-IN'),
+        'Expense',
+        expense.purpose,
+        -expense.amount, // Negative for expenses
+        'Expense',
+        expense.admin_name,
+        '',
+        ''
+      ]);
+    });
+
+    // Create CSV content
+    const csvContent = [
+      csvHeaders.join(','),
+      ...csvRows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `depur-vinayaka-chavithi-report-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-6xl mx-auto">
@@ -159,7 +248,7 @@ export const Donations: React.FC = () => {
                 </Button>
               </>
             )}
-            <Button variant="outline">
+            <Button variant="outline" onClick={exportReport}>
               <Download className="w-4 h-4 mr-2" />
               Export Report
             </Button>
@@ -350,7 +439,7 @@ export const Donations: React.FC = () => {
               </span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {donations.map((donation) => (
+            {donations.map((donation) => (
                 <Card key={donation.id} className="festival-card">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg">{donation.donor_name || 'Anonymous'}</CardTitle>
