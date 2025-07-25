@@ -21,7 +21,7 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-card-foreground">{person.name}</h3>
-                <p className="text-sm text-muted-foreground">Added by {person.adminName}</p>
+                <p className="text-sm text-muted-foreground">Added by {person.admin_name}</p>
               </div>
             </div>
 
@@ -33,12 +33,12 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
               
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Phone className="w-4 h-4" />
-                <span>{person.phoneNumber}</span>
+                <span>{person.phone_number}</span>
               </div>
               
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Calendar className="w-4 h-4" />
-                <span>Added {new Date(person.createdAt).toLocaleDateString()}</span>
+                <span>Added {new Date(person.created_at).toLocaleDateString()}</span>
               </div>
             </div>
           </div>
@@ -46,7 +46,7 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
           {/* Contact Info Display */}
           <div className="text-center p-3 bg-primary/5 rounded-lg">
             <p className="text-sm text-muted-foreground mb-1">Contact for donations:</p>
-            <p className="font-medium text-primary">{person.phoneNumber}</p>
+            <p className="font-medium text-primary">{person.phone_number}</p>
           </div>
         </div>
       </CardContent>
