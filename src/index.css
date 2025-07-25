@@ -78,8 +78,10 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Fixed primary colors for dark mode */
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 39 100% 65%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -144,5 +146,25 @@
   
   .donation-button {
     @apply ganesh-gradient text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-all duration-300 hover:scale-105 divine-shadow;
+  }
+  
+  .hero-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+  }
+  
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Enhanced card styles */
+  .festival-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-blessing);
+  }
+  
+  /* Better text contrast */
+  .hero-text {
+    color: hsl(var(--primary-foreground));
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   }
 }

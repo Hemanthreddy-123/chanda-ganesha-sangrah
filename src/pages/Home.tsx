@@ -47,7 +47,7 @@ export const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="hero-gradient text-white py-20 px-4 text-center relative overflow-hidden">
+      <section className="hero-gradient py-20 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
           <div className="mb-8">
             <img 
@@ -57,18 +57,18 @@ export const Home = () => {
             />
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 text-shadow">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 hero-text">
             Depur Vinayaka Chavithi 2k25
           </h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90">
+          <p className="text-xl md:text-2xl mb-8 hero-text opacity-90">
             Festival Collection & Management System
           </p>
           
           <div className="mt-12">
-            <p className="text-lg opacity-90 mb-4">
+            <p className="text-lg hero-text opacity-90 mb-4">
               जय श्री गणेश! Welcome to our divine festival celebration
             </p>
-            <p className="text-sm opacity-75">
+            <p className="text-sm hero-text opacity-75">
               Managing collections with transparency and devotion
             </p>
           </div>
