@@ -4,21 +4,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/SupabaseAuthContext';
-import { AdminCollection } from '@/types/supabase';
-import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { logAdminActivity } from '@/components/AdminActivityLog';
 
 interface AddCollectionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onCollectionAdded: (collection: AdminCollection) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
 }
 
 export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
-  isOpen,
-  onClose,
-  onCollectionAdded
+  open,
+  onOpenChange,
+  onSuccess
 }) => {
   const { profile } = useAuth();
+  const { toast } = useToast();
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,41 +29,64 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
     e.preventDefault();
     
     if (!profile) {
-      toast.error('You must be logged in to add a collection');
+      toast({
+        title: "Error",
+        description: "You must be logged in to add a collection",
+        variant: "destructive",
+      });
       return;
     }
 
     if (!amount || parseFloat(amount) <= 0) {
-      toast.error('Please enter a valid amount');
+      toast({
+        title: "Error",
+        description: "Please enter a valid amount",
+        variant: "destructive",
+      });
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const collection: AdminCollection = {
-        id: Math.random().toString(36).substr(2, 9),
-        admin_id: profile.user_id,
-        admin_name: profile.name,
-        amount: parseFloat(amount),
-        date,
-        created_at: new Date().toISOString()
-      };
+      const { error } = await supabase
+        .from('admin_collections')
+        .insert([
+          {
+            admin_id: profile.user_id,
+            admin_name: profile.name,
+            amount: parseFloat(amount),
+            date
+          }
+        ]);
 
-      // Save to localStorage
-      const existingCollections = JSON.parse(localStorage.getItem('adminCollections') || '[]');
-      const updatedCollections = [...existingCollections, collection];
-      localStorage.setItem('adminCollections', JSON.stringify(updatedCollections));
+      if (error) throw error;
 
-      onCollectionAdded(collection);
-      toast.success(`Collection of ₹${amount} added successfully`);
+      // Log activity
+      logAdminActivity(
+        profile.user_id,
+        profile.name,
+        'Added collection',
+        `Added collection of ₹${amount} for ${date}`
+      );
+
+      toast({
+        title: "Success",
+        description: `Collection of ₹${amount} added successfully`,
+      });
       
       // Reset form
       setAmount('');
       setDate(new Date().toISOString().split('T')[0]);
-      onClose();
-    } catch (error) {
-      toast.error('Failed to add collection');
+      onOpenChange(false);
+      onSuccess();
+    } catch (error: any) {
+      console.error('Error adding collection:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add collection",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -70,11 +95,11 @@ export const AddCollectionModal: React.FC<AddCollectionModalProps> = ({
   const handleClose = () => {
     setAmount('');
     setDate(new Date().toISOString().split('T')[0]);
-    onClose();
+    onOpenChange(false);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add Daily Collection</DialogTitle>

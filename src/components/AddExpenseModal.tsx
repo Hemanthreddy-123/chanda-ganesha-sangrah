@@ -5,21 +5,23 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/context/SupabaseAuthContext';
-import { AdminExpense } from '@/types/supabase';
-import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { logAdminActivity } from '@/components/AdminActivityLog';
 
 interface AddExpenseModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onExpenseAdded: (expense: AdminExpense) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
 }
 
 export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
-  isOpen,
-  onClose,
-  onExpenseAdded
+  open,
+  onOpenChange,
+  onSuccess
 }) => {
   const { profile } = useAuth();
+  const { toast } = useToast();
   const [amount, setAmount] = useState('');
   const [purpose, setPurpose] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -29,48 +31,75 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
     e.preventDefault();
     
     if (!profile) {
-      toast.error('You must be logged in to add an expense');
+      toast({
+        title: "Error",
+        description: "You must be logged in to add an expense",
+        variant: "destructive",
+      });
       return;
     }
 
     if (!amount || parseFloat(amount) <= 0) {
-      toast.error('Please enter a valid amount');
+      toast({
+        title: "Error",
+        description: "Please enter a valid amount",
+        variant: "destructive",
+      });
       return;
     }
 
     if (!purpose.trim()) {
-      toast.error('Please enter the purpose of expense');
+      toast({
+        title: "Error",
+        description: "Please enter the purpose of expense",
+        variant: "destructive",
+      });
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const expense: AdminExpense = {
-        id: Math.random().toString(36).substr(2, 9),
-        admin_id: profile.user_id,
-        admin_name: profile.name,
-        amount: parseFloat(amount),
-        purpose: purpose.trim(),
-        date,
-        created_at: new Date().toISOString()
-      };
+      const { error } = await supabase
+        .from('admin_expenses')
+        .insert([
+          {
+            admin_id: profile.user_id,
+            admin_name: profile.name,
+            amount: parseFloat(amount),
+            purpose: purpose.trim(),
+            date
+          }
+        ]);
 
-      // Save to localStorage
-      const existingExpenses = JSON.parse(localStorage.getItem('adminExpenses') || '[]');
-      const updatedExpenses = [...existingExpenses, expense];
-      localStorage.setItem('adminExpenses', JSON.stringify(updatedExpenses));
+      if (error) throw error;
 
-      onExpenseAdded(expense);
-      toast.success(`Expense of ₹${amount} added successfully`);
+      // Log activity
+      logAdminActivity(
+        profile.user_id,
+        profile.name,
+        'Added expense',
+        `Added expense of ₹${amount} for ${purpose.trim()} on ${date}`
+      );
+
+      toast({
+        title: "Success",
+        description: `Expense of ₹${amount} added successfully`,
+      });
       
       // Reset form
       setAmount('');
       setPurpose('');
       setDate(new Date().toISOString().split('T')[0]);
-      onClose();
-    } catch (error) {
-      toast.error('Failed to add expense');
+      onOpenChange(false);
+      onSuccess();
+    } catch (error: any) {
+      console.error('Error adding expense:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add expense",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -80,11 +109,11 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
     setAmount('');
     setPurpose('');
     setDate(new Date().toISOString().split('T')[0]);
-    onClose();
+    onOpenChange(false);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add Expense</DialogTitle>

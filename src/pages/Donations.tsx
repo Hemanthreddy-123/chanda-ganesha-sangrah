@@ -523,21 +523,15 @@ export const Donations: React.FC = () => {
 
         {/* Modals */}
         <AddCollectionModal
-          isOpen={isCollectionModalOpen}
-          onClose={() => setIsCollectionModalOpen(false)}
-          onCollectionAdded={(collection) => {
-            setAdminCollections(prev => [...prev, collection]);
-            loadData();
-          }}
+          open={isCollectionModalOpen}
+          onOpenChange={setIsCollectionModalOpen}
+          onSuccess={loadData}
         />
 
         <AddExpenseModal
-          isOpen={isExpenseModalOpen}
-          onClose={() => setIsExpenseModalOpen(false)}
-          onExpenseAdded={(expense) => {
-            setAdminExpenses(prev => [...prev, expense]);
-            loadData();
-          }}
+          open={isExpenseModalOpen}
+          onOpenChange={setIsExpenseModalOpen}
+          onSuccess={loadData}
         />
       </div>
     </div>
