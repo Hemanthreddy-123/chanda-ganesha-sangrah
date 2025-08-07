@@ -4,6 +4,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, Phone, User, Calendar } from 'lucide-react';
 
+// Admin contact mapping
+const ADMIN_PHONES: Record<string, string> = {
+  'Mukkamalla Manohar Reddy': '7569158421',
+  'Ravilla Balaji': '8179914192',
+  'Siddavatam Harsha': '9392312978',
+  'Chagam Madhu Reddy': '7095712647',
+};
+
 interface PersonCardProps {
   person: Person;
 }
@@ -21,7 +29,14 @@ export const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-card-foreground">{person.name}</h3>
-                <p className="text-sm text-muted-foreground">Added by {person.admin_name}</p>
+                <p className="text-sm text-muted-foreground">
+                  Added by {person.admin_name}
+                  {ADMIN_PHONES[person.admin_name] && (
+                    <span className="text-primary font-medium ml-1">
+                      📞 {ADMIN_PHONES[person.admin_name]}
+                    </span>
+                  )}
+                </p>
               </div>
             </div>
 

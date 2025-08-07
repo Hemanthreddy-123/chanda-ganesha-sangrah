@@ -19,14 +19,12 @@ interface DonationModalProps {
   onDonationComplete: (donation: Donation) => void;
 }
 
-// Mock admin data
+// Admin data
 const ADMINS: Admin[] = [
-  { id: 'admin1', name: 'Rajesh Sharma', email: 'admin1@ganesh.com', phoneNumber: '+91 98765 43210' },
-  { id: 'admin2', name: 'Priya Patel', email: 'admin2@ganesh.com', phoneNumber: '+91 98765 43211' },
-  { id: 'admin3', name: 'Amit Kumar', email: 'admin3@ganesh.com', phoneNumber: '+91 98765 43212' },
-  { id: 'admin4', name: 'Sunita Joshi', email: 'admin4@ganesh.com', phoneNumber: '+91 98765 43213' },
-  { id: 'admin5', name: 'Vikram Singh', email: 'admin5@ganesh.com', phoneNumber: '+91 98765 43214' },
-  { id: 'admin6', name: 'Kavya Reddy', email: 'admin6@ganesh.com', phoneNumber: '+91 98765 43215' },
+  { id: 'admin1', name: 'Mukkamalla Manohar Reddy', email: 'manohar@ganesh.com', phoneNumber: '+91 7569158421' },
+  { id: 'admin2', name: 'Ravilla Balaji', email: 'balaji@ganesh.com', phoneNumber: '+91 8179914192' },
+  { id: 'admin3', name: 'Siddavatam Harsha', email: 'harsha@ganesh.com', phoneNumber: '+91 9392312978' },
+  { id: 'admin4', name: 'Chagam Madhu Reddy', email: 'madhu@ganesh.com', phoneNumber: '+91 7095712647' },
 ];
 
 export const DonationModal: React.FC<DonationModalProps> = ({ 
@@ -52,7 +50,7 @@ export const DonationModal: React.FC<DonationModalProps> = ({
 
   const generateQRCode = async () => {
     try {
-      const upiUrl = `upi://pay?pa=ganeshfund@ybl&pn=Ganesh Fund&am=${amount}&cu=INR&tn=Donation for ${person?.name}`;
+      const upiUrl = `upi://pay?pa=madhureddych10@ybl&pn=Ganesh Fund&am=${amount}&cu=INR&tn=Donation for ${person?.name}`;
       const qrUrl = await QRCode.toDataURL(upiUrl);
       setQrCodeUrl(qrUrl);
     } catch (error) {

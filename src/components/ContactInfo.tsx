@@ -4,15 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Phone, MapPin, MessageCircle } from 'lucide-react';
 
 const ADMIN_CONTACTS = [
-  { name: 'Rajesh Sharma', phone: '+91 98765 43210', whatsapp: '+91 98765 43210' },
-  { name: 'Priya Patel', phone: '+91 98765 43211', whatsapp: '+91 98765 43211' },
-  { name: 'Amit Kumar', phone: '+91 98765 43212', whatsapp: '+91 98765 43212' },
-  { name: 'Sunita Joshi', phone: '+91 98765 43213', whatsapp: '+91 98765 43213' },
-  { name: 'Vikram Singh', phone: '+91 98765 43214', whatsapp: '+91 98765 43214' },
-  { name: 'Kavya Reddy', phone: '+91 98765 43215', whatsapp: '+91 98765 43215' },
+  { name: 'Mukkamalla Manohar Reddy', phone: '7569158421', whatsapp: '7569158421' },
+  { name: 'Ravilla Balaji', phone: '8179914192', whatsapp: '8179914192' },
+  { name: 'Siddavatam Harsha', phone: '9392312978', whatsapp: '9392312978' },
+  { name: 'Chagam Madhu Reddy', phone: '7095712647', whatsapp: '7095712647' },
 ];
 
-const UPI_ID = "ganeshcollection2025@paytm";
+const UPI_ID = "madhureddych10@ybl";
 
 export const ContactInfo: React.FC = () => {
   const handleWhatsAppMessage = (phone: string) => {
@@ -83,18 +81,18 @@ export const ContactInfo: React.FC = () => {
                 <CardTitle className="text-lg">{contact.name}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-primary" />
-                    <span className="font-mono">{contact.phone}</span>
-                  </div>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => window.open(`tel:${contact.phone}`, '_self')}
-                  >
-                    Call
-                  </Button>
+                 <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-2">
+                     <Phone className="w-4 h-4 text-primary" />
+                     <span className="font-mono">+91 {contact.phone}</span>
+                   </div>
+                   <Button 
+                     size="sm" 
+                     variant="outline"
+                     onClick={() => window.open(`tel:+91${contact.phone}`, '_self')}
+                   >
+                     Call
+                   </Button>
                 </div>
                 <Button 
                   className="w-full" 

@@ -16,12 +16,10 @@ export const useAuth = () => {
 
 // Predefined admin credentials
 const ADMIN_CREDENTIALS = [
-  { email: 'admin1@ganesh.com', password: 'admin123', name: 'Rajesh Sharma', id: 'admin1' },
-  { email: 'admin2@ganesh.com', password: 'admin123', name: 'Priya Patel', id: 'admin2' },
-  { email: 'admin3@ganesh.com', password: 'admin123', name: 'Amit Kumar', id: 'admin3' },
-  { email: 'admin4@ganesh.com', password: 'admin123', name: 'Sunita Joshi', id: 'admin4' },
-  { email: 'admin5@ganesh.com', password: 'admin123', name: 'Vikram Singh', id: 'admin5' },
-  { email: 'admin6@ganesh.com', password: 'admin123', name: 'Kavya Reddy', id: 'admin6' },
+  { email: 'manohar@ganesh.com', password: 'admin123', name: 'Mukkamalla Manohar Reddy', id: 'admin1' },
+  { email: 'balaji@ganesh.com', password: 'admin123', name: 'Ravilla Balaji', id: 'admin2' },
+  { email: 'harsha@ganesh.com', password: 'admin123', name: 'Siddavatam Harsha', id: 'admin3' },
+  { email: 'madhu@ganesh.com', password: 'admin123', name: 'Chagam Madhu Reddy', id: 'admin4' },
 ];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

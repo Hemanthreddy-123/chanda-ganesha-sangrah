@@ -22,6 +22,14 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+// Admin contact mapping
+const ADMIN_PHONES: Record<string, string> = {
+  'Mukkamalla Manohar Reddy': '7569158421',
+  'Ravilla Balaji': '8179914192',
+  'Siddavatam Harsha': '9392312978',
+  'Chagam Madhu Reddy': '7095712647',
+};
+
 export const Donations: React.FC = () => {
   const { profile } = useAuth();
   const [persons, setPersons] = useState<Person[]>([]);
@@ -322,7 +330,14 @@ export const Donations: React.FC = () => {
               {Array.from(adminData.values()).map((admin) => (
                 <Card key={admin.adminId} className="festival-card">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">{admin.adminName}</CardTitle>
+                    <CardTitle className="text-lg">
+                      {admin.adminName}
+                      {ADMIN_PHONES[admin.adminName] && (
+                        <span className="text-sm text-primary font-medium ml-2">
+                          📞 {ADMIN_PHONES[admin.adminName]}
+                        </span>
+                      )}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
@@ -417,7 +432,14 @@ export const Donations: React.FC = () => {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Added by:</span>
-                      <span className="text-sm">{person.admin_name}</span>
+                      <span className="text-sm">
+                        {person.admin_name}
+                        {ADMIN_PHONES[person.admin_name] && (
+                          <span className="text-primary font-medium ml-1">
+                            📞 {ADMIN_PHONES[person.admin_name]}
+                          </span>
+                        )}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Date:</span>
@@ -459,7 +481,14 @@ export const Donations: React.FC = () => {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Received by:</span>
-                        <span className="text-sm">{donation.receiving_admin_name}</span>
+                        <span className="text-sm">
+                          {donation.receiving_admin_name}
+                          {ADMIN_PHONES[donation.receiving_admin_name] && (
+                            <span className="text-primary font-medium ml-1">
+                              📞 {ADMIN_PHONES[donation.receiving_admin_name]}
+                            </span>
+                          )}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Date:</span>
@@ -494,7 +523,14 @@ export const Donations: React.FC = () => {
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-muted-foreground">Spent by:</span>
-                          <span className="text-sm">{expense.admin_name}</span>
+                          <span className="text-sm">
+                            {expense.admin_name}
+                            {ADMIN_PHONES[expense.admin_name] && (
+                              <span className="text-primary font-medium ml-1">
+                                📞 {ADMIN_PHONES[expense.admin_name]}
+                              </span>
+                            )}
+                          </span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-muted-foreground">Date:</span>
