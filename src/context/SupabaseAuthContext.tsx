@@ -9,7 +9,6 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, name: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   updateLoginTime: () => Promise<void>;
@@ -84,37 +83,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (email: string, password: string, name: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          name: name
-        }
-      }
-    });
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Please check your email to confirm your account.",
-      });
-    }
-
-    return { error };
-  };
 
   const signIn = async (email: string, password: string) => {
+    // Check if email is authorized
+    const authorizedEmails = [
+      'manoharreddy.mukkamalla@temple-admin.com',
+      'balaji.ravilla@temple-admin.com', 
+      'harsha.siddavatam@temple-admin.com',
+      'madhu.chagam@temple-admin.com'
+    ];
+
+    if (!authorizedEmails.includes(email)) {
+      toast({
+        title: "Access Denied",
+        description: "Only authorized temple administrators can access this system.",
+        variant: "destructive",
+      });
+      return { error: { message: "Unauthorized email address" } };
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -131,8 +118,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title: "Success",
         description: "Successfully signed in!",
       });
-      // Update login time after successful sign in
-      setTimeout(() => {
+      
+      // Log the login activity
+      setTimeout(async () => {
+        if (user && profile) {
+          await supabase.rpc('log_activity', {
+            admin_id_param: user.id,
+            admin_name_param: profile.name,
+            activity_type_param: 'login',
+            description_param: `Admin ${profile.name} logged in`
+          });
+          
+          await supabase.rpc('update_admin_performance_stats', {
+            admin_id_param: user.id,
+            admin_name_param: profile.name
+          });
+        }
+        
         updateLoginTime();
       }, 100);
     }
@@ -180,7 +182,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     session,
     profile,
     loading,
-    signUp,
     signIn,
     signOut,
     updateLoginTime

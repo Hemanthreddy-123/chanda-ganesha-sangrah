@@ -100,9 +100,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-start space-x-2">
                   <AlertCircle className="w-4 h-4 text-primary mt-0.5" />
                   <div className="text-sm">
-                    <p className="font-medium">Demo Credentials:</p>
-                    <p>Email: admin1@ganesh.com to admin6@ganesh.com</p>
-                    <p>Password: admin123</p>
+                    <p className="font-medium">Authorized Admin Emails:</p>
+                    <p className="text-xs">manoharreddy.mukkamalla@temple-admin.com</p>
+                    <p className="text-xs">balaji.ravilla@temple-admin.com</p>
+                    <p className="text-xs">harsha.siddavatam@temple-admin.com</p>
+                    <p className="text-xs">madhu.chagam@temple-admin.com</p>
                   </div>
                 </div>
               </div>

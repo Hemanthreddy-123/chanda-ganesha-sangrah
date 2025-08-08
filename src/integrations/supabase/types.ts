@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          activity_type: string
+          admin_id: string
+          admin_name: string
+          amount: number | null
+          created_at: string
+          description: string
+          id: string
+          metadata: Json | null
+          record_id: string | null
+          table_affected: string | null
+          timestamp: string
+        }
+        Insert: {
+          activity_type: string
+          admin_id: string
+          admin_name: string
+          amount?: number | null
+          created_at?: string
+          description: string
+          id?: string
+          metadata?: Json | null
+          record_id?: string | null
+          table_affected?: string | null
+          timestamp?: string
+        }
+        Update: {
+          activity_type?: string
+          admin_id?: string
+          admin_name?: string
+          amount?: number | null
+          created_at?: string
+          description?: string
+          id?: string
+          metadata?: Json | null
+          record_id?: string | null
+          table_affected?: string | null
+          timestamp?: string
+        }
+        Relationships: []
+      }
       admin_activities: {
         Row: {
           action: string
@@ -125,6 +167,57 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_performance: {
+        Row: {
+          activities_count: number | null
+          admin_id: string
+          admin_name: string
+          created_at: string
+          date: string
+          id: string
+          login_time: string | null
+          logout_time: string | null
+          session_duration: unknown | null
+          total_donations_collected: number | null
+          total_expenses_recorded: number | null
+          total_people_registered: number | null
+          total_schedules_created: number | null
+          updated_at: string
+        }
+        Insert: {
+          activities_count?: number | null
+          admin_id: string
+          admin_name: string
+          created_at?: string
+          date?: string
+          id?: string
+          login_time?: string | null
+          logout_time?: string | null
+          session_duration?: unknown | null
+          total_donations_collected?: number | null
+          total_expenses_recorded?: number | null
+          total_people_registered?: number | null
+          total_schedules_created?: number | null
+          updated_at?: string
+        }
+        Update: {
+          activities_count?: number | null
+          admin_id?: string
+          admin_name?: string
+          created_at?: string
+          date?: string
+          id?: string
+          login_time?: string | null
+          logout_time?: string | null
+          session_duration?: unknown | null
+          total_donations_collected?: number | null
+          total_expenses_recorded?: number | null
+          total_people_registered?: number | null
+          total_schedules_created?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_settings: {
         Row: {
           created_at: string
@@ -151,32 +244,41 @@ export type Database = {
       }
       announcements: {
         Row: {
+          category: string | null
           content: string
           created_at: string
           created_by: string
+          expires_at: string | null
           id: string
           is_active: boolean | null
           priority: number | null
+          target_audience: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          category?: string | null
           content: string
           created_at?: string
           created_by: string
+          expires_at?: string | null
           id?: string
           is_active?: boolean | null
           priority?: number | null
+          target_audience?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          category?: string | null
           content?: string
           created_at?: string
           created_by?: string
+          expires_at?: string | null
           id?: string
           is_active?: boolean | null
           priority?: number | null
+          target_audience?: string | null
           title?: string
           updated_at?: string
         }
@@ -228,6 +330,114 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      financial_transactions: {
+        Row: {
+          admin_id: string
+          admin_name: string
+          amount: number
+          created_at: string
+          date: string
+          description: string
+          donor_phone: string | null
+          id: string
+          payment_method: string | null
+          person_id: string | null
+          person_name: string | null
+          transaction_type: string
+          updated_at: string
+        }
+        Insert: {
+          admin_id: string
+          admin_name: string
+          amount: number
+          created_at?: string
+          date?: string
+          description: string
+          donor_phone?: string | null
+          id?: string
+          payment_method?: string | null
+          person_id?: string | null
+          person_name?: string | null
+          transaction_type: string
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: string
+          admin_name?: string
+          amount?: number
+          created_at?: string
+          date?: string
+          description?: string
+          donor_phone?: string | null
+          id?: string
+          payment_method?: string | null
+          person_id?: string | null
+          person_name?: string | null
+          transaction_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      people_management: {
+        Row: {
+          address: string
+          admin_id: string
+          admin_name: string
+          created_at: string
+          email: string | null
+          emergency_contact: string | null
+          emergency_phone: string | null
+          id: string
+          is_active: boolean | null
+          last_donation_date: string | null
+          name: string
+          notes: string | null
+          phone_number: string
+          preferred_payment_method: string | null
+          registration_date: string | null
+          total_donations: number | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          admin_id: string
+          admin_name: string
+          created_at?: string
+          email?: string | null
+          emergency_contact?: string | null
+          emergency_phone?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_donation_date?: string | null
+          name: string
+          notes?: string | null
+          phone_number: string
+          preferred_payment_method?: string | null
+          registration_date?: string | null
+          total_donations?: number | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          admin_id?: string
+          admin_name?: string
+          created_at?: string
+          email?: string | null
+          emergency_contact?: string | null
+          emergency_phone?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_donation_date?: string | null
+          name?: string
+          notes?: string | null
+          phone_number?: string
+          preferred_payment_method?: string | null
+          registration_date?: string | null
+          total_donations?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       persons: {
         Row: {
@@ -316,6 +526,63 @@ export type Database = {
         }
         Relationships: []
       }
+      schedule_events: {
+        Row: {
+          admin_id: string
+          admin_name: string
+          attendees_expected: number | null
+          created_at: string
+          description: string | null
+          end_time: string | null
+          event_date: string
+          id: string
+          is_active: boolean | null
+          location: string | null
+          organizer: string | null
+          priority: number | null
+          start_time: string | null
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_id: string
+          admin_name: string
+          attendees_expected?: number | null
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          event_date: string
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          organizer?: string | null
+          priority?: number | null
+          start_time?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: string
+          admin_name?: string
+          attendees_expected?: number | null
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          event_date?: string
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          organizer?: string | null
+          priority?: number | null
+          start_time?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       schedules: {
         Row: {
           created_at: string
@@ -376,6 +643,23 @@ export type Database = {
       get_approved_admin_count: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      log_activity: {
+        Args: {
+          admin_id_param: string
+          admin_name_param: string
+          activity_type_param: string
+          description_param: string
+          metadata_param?: Json
+          table_affected_param?: string
+          record_id_param?: string
+          amount_param?: number
+        }
+        Returns: string
+      }
+      update_admin_performance_stats: {
+        Args: { admin_id_param: string; admin_name_param: string }
+        Returns: undefined
       }
     }
     Enums: {
