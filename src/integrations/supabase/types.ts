@@ -68,6 +68,33 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_credentials_reference: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          notes: string | null
+          temp_password: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          name: string
+          notes?: string | null
+          temp_password: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          temp_password?: string
+        }
+        Relationships: []
+      }
       admin_expenses: {
         Row: {
           admin_id: string
