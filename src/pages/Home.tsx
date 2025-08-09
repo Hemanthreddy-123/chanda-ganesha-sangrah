@@ -55,8 +55,8 @@ export const Home = () => {
       {/* Hero Section */}
       <section className="hero-gradient py-16 sm:py-20 px-4 text-center relative overflow-hidden">
         <div className="container mx-auto relative z-10">
-          {/* Admin Login Button */}
-          <div className="absolute top-4 right-4 z-20">
+          {/* Admin Login Button - Hidden on mobile */}
+          <div className="absolute top-4 right-4 z-20 hidden sm:block">
             {!user && (
               <Button 
                 onClick={() => setIsLoginModalOpen(true)}
@@ -186,6 +186,20 @@ export const Home = () => {
 
       {/* Contact Information */}
       <ContactInfo />
+
+      {/* Mobile Admin Login Button */}
+      {!user && (
+        <div className="fixed bottom-4 right-4 z-50 sm:hidden">
+          <Button 
+            onClick={() => setIsLoginModalOpen(true)}
+            size="lg"
+            className="rounded-full shadow-lg donation-button"
+          >
+            <LogIn className="w-5 h-5 mr-2" />
+            Admin
+          </Button>
+        </div>
+      )}
 
       {/* Login Modal */}
       <LoginModal 
