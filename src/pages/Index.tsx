@@ -38,18 +38,9 @@ const Index = () => {
             <AdminDashboard />
           </div>
         ) : (
-          <>
-            <Home />
-            <div className="fixed bottom-8 right-8">
-              <Button 
-                onClick={() => navigate('/auth')}
-                className="donation-button shadow-lg"
-                size="lg"
-              >
-                Admin Login
-              </Button>
-            </div>
-          </>
+            <>
+              <Home />
+            </>
         )}
       </main>
     </div>

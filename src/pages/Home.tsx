@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, LogIn } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { PersonCard } from '@/components/PersonCard';
 import { ContactInfo } from '@/components/ContactInfo';
 import FinancialSummary from '@/components/FinancialSummary';
 import ScheduleManagement from '@/components/ScheduleManagement';
-import { LoginModal } from '@/components/LoginModal';
+//
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Person } from '@/types/supabase';
@@ -17,7 +17,7 @@ export const Home = () => {
   const [persons, setPersons] = useState<Person[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  // const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -172,26 +172,7 @@ export const Home = () => {
       {/* Contact Information */}
       <ContactInfo />
 
-      {/* Mobile Admin Login Button - Only show if not logged in */}
-      {!user && (
-        <div className="fixed bottom-4 right-4 z-50">
-          <Button 
-            onClick={() => setIsLoginModalOpen(true)}
-            size="lg"
-            className="rounded-full shadow-lg donation-button text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3"
-          >
-            <LogIn className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Admin</span>
-            <span className="sm:hidden">Login</span>
-          </Button>
-        </div>
-      )}
-
-      {/* Login Modal */}
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
-      />
+// Removed mobile login modal & button; now provided globally
     </div>
   );
 };

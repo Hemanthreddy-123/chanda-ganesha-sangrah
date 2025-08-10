@@ -3,26 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AddPersonModal } from '@/components/AddPersonModal';
-import { AdminActivityLog } from '@/components/AdminActivityLog';
-import { DonationModal } from '@/components/DonationModal';
-import { AddCollectionModal } from '@/components/AddCollectionModal';
-import { AddExpenseModal } from '@/components/AddExpenseModal';
-import ManualFinancialEntry from '@/components/ManualFinancialEntry';
 import FinancialSummary from '@/components/FinancialSummary';
+import { AdminActivityLog } from '@/components/AdminActivityLog';
 import { supabase } from '@/integrations/supabase/client';
 import {
   LogOut,
   Users,
   DollarSign,
   Activity,
-  Plus,
   TrendingUp,
-  TrendingDown,
-  Calendar,
-  Bell
+  TrendingDown
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -44,10 +34,7 @@ export const AdminDashboard = () => {
     totalExpenses: 0,
     recentActivities: 0
   });
-  const [isAddPersonModalOpen, setIsAddPersonModalOpen] = useState(false);
-  const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
-  const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
-  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+// Removed modal states; actions moved to Donations page
 
   useEffect(() => {
     loadDashboardStats();
@@ -182,8 +169,7 @@ export const AdminDashboard = () => {
         </Card>
       </div>
 
-      {/* Manual Financial Entry - Only for admins */}
-      <ManualFinancialEntry />
+{/* Manual Financial Entry moved to Donations page */}
 
       {/* Financial Summary */}
       <div>
@@ -191,85 +177,13 @@ export const AdminDashboard = () => {
         <FinancialSummary />
       </div>
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="actions" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-2 text-xs sm:text-sm">
-          <TabsTrigger value="actions" className="text-xs sm:text-sm">Quick Actions</TabsTrigger>
-          <TabsTrigger value="activity" className="text-xs sm:text-sm">Activity Log</TabsTrigger>
-        </TabsList>
+      {/* Activity Log Only */}
+      <div className="space-y-4">
+        <h2 className="text-lg sm:text-2xl font-bold">Activity Log</h2>
+        <AdminActivityLog />
+      </div>
 
-        <TabsContent value="actions" className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <Button 
-              onClick={() => setIsAddPersonModalOpen(true)}
-              className="flex items-center justify-center gap-2 h-12 sm:h-16 text-sm sm:text-base"
-            >
-              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-              Add Person
-            </Button>
-
-            <Button 
-              onClick={() => setIsDonationModalOpen(true)}
-              variant="secondary"
-              className="flex items-center justify-center gap-2 h-12 sm:h-16 text-sm sm:text-base"
-            >
-              <DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
-              Record Donation
-            </Button>
-
-            <Button 
-              onClick={() => setIsCollectionModalOpen(true)}
-              variant="outline"
-              className="flex items-center justify-center gap-2 h-12 sm:h-16 text-sm sm:text-base"
-            >
-              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
-              Add Collection
-            </Button>
-
-            <Button 
-              onClick={() => setIsExpenseModalOpen(true)}
-              variant="destructive"
-              className="flex items-center justify-center gap-2 h-12 sm:h-16 text-sm sm:text-base"
-            >
-              <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5" />
-              Record Expense
-            </Button>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="activity" className="space-y-4">
-          <AdminActivityLog />
-        </TabsContent>
-      </Tabs>
-
-      {/* Modals */}
-      <AddPersonModal 
-        isOpen={isAddPersonModalOpen} 
-        onClose={() => setIsAddPersonModalOpen(false)}
-        onPersonAdded={loadDashboardStats}
-      />
-      
-      <DonationModal 
-        isOpen={isDonationModalOpen} 
-        onClose={() => setIsDonationModalOpen(false)}
-        person={null}
-        onDonationComplete={() => {
-          loadDashboardStats();
-          setIsDonationModalOpen(false);
-        }}
-      />
-
-      <AddCollectionModal 
-        open={isCollectionModalOpen} 
-        onOpenChange={setIsCollectionModalOpen}
-        onSuccess={loadDashboardStats}
-      />
-
-      <AddExpenseModal 
-        open={isExpenseModalOpen} 
-        onOpenChange={setIsExpenseModalOpen}
-        onSuccess={loadDashboardStats}
-      />
+{/* Removed modals: Actions moved to Donations page */}
     </div>
   );
 };

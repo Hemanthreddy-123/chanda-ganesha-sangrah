@@ -9,6 +9,8 @@ import { ArrowLeft, Search, Filter, DollarSign, Users, Calendar, Phone } from 'l
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import AddWrittenModal from '@/components/AddWrittenModal';
+import { AddCollectionModal } from '@/components/AddCollectionModal';
+import { AddExpenseModal } from '@/components/AddExpenseModal';
 
 interface DonationData {
   id: string;
@@ -38,6 +40,8 @@ const Donations = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterMethod, setFilterMethod] = useState<string>('all');
   const [isWrittenOpen, setIsWrittenOpen] = useState(false);
+  const [isCollectionOpen, setIsCollectionOpen] = useState(false);
+  const [isExpenseOpen, setIsExpenseOpen] = useState(false);
 
   useEffect(() => {
     loadAllData();
@@ -178,7 +182,13 @@ const Donations = () => {
               </p>
             </div>
           </div>
-          <div className="w-full sm:w-auto">
+          <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
+            <Button size="sm" variant="outline" className="w-full sm:w-auto" onClick={() => setIsCollectionOpen(true)}>
+              Add Collection
+            </Button>
+            <Button size="sm" variant="destructive" className="w-full sm:w-auto" onClick={() => setIsExpenseOpen(true)}>
+              Add Expense
+            </Button>
             <Button size="sm" className="w-full sm:w-auto" onClick={() => setIsWrittenOpen(true)}>
               Add Book in Cash
             </Button>
@@ -340,6 +350,16 @@ const Donations = () => {
         <AddWrittenModal 
           open={isWrittenOpen}
           onOpenChange={setIsWrittenOpen}
+          onSuccess={loadAllData}
+        />
+        <AddCollectionModal 
+          open={isCollectionOpen}
+          onOpenChange={setIsCollectionOpen}
+          onSuccess={loadAllData}
+        />
+        <AddExpenseModal 
+          open={isExpenseOpen}
+          onOpenChange={setIsExpenseOpen}
           onSuccess={loadAllData}
         />
       </div>

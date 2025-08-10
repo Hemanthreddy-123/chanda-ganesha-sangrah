@@ -12,7 +12,7 @@ export const Header: React.FC<HeaderProps> = () => {
   const location = useLocation();
 
   return (
-    <header className="bg-card border-b border-border blessing-shadow sticky top-0 z-50">
+    <header className="bg-card border-b border-border blessing-shadow sticky top-0 z-40">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo and Title */}
@@ -71,13 +71,15 @@ export const Header: React.FC<HeaderProps> = () => {
                 </Button>
               </div>
             ) : (
-              <Button 
-                variant="default" 
-                size="sm" 
-                onClick={() => window.location.href = '/auth'}
-              >
-                Admin Login
-              </Button>
+              <div className="hidden sm:block">
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  onClick={() => window.location.href = '/auth'}
+                >
+                  Admin Login
+                </Button>
+              </div>
             )}
           </div>
         </div>
