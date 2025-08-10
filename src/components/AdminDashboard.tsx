@@ -252,19 +252,23 @@ export const AdminDashboard = () => {
       <DonationModal 
         isOpen={isDonationModalOpen} 
         onClose={() => setIsDonationModalOpen(false)}
-        onDonationAdded={loadDashboardStats}
+        person={null}
+        onDonationComplete={() => {
+          loadDashboardStats();
+          setIsDonationModalOpen(false);
+        }}
       />
 
       <AddCollectionModal 
-        isOpen={isCollectionModalOpen} 
-        onClose={() => setIsCollectionModalOpen(false)}
-        onCollectionAdded={loadDashboardStats}
+        open={isCollectionModalOpen} 
+        onOpenChange={setIsCollectionModalOpen}
+        onSuccess={loadDashboardStats}
       />
 
       <AddExpenseModal 
-        isOpen={isExpenseModalOpen} 
-        onClose={() => setIsExpenseModalOpen(false)}
-        onExpenseAdded={loadDashboardStats}
+        open={isExpenseModalOpen} 
+        onOpenChange={setIsExpenseModalOpen}
+        onSuccess={loadDashboardStats}
       />
     </div>
   );

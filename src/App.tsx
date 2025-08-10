@@ -7,7 +7,7 @@ import { AuthProvider } from "@/context/SupabaseAuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
-import { Donations } from "./pages/Donations";
+import Donations from "./pages/Donations";
 
 const queryClient = new QueryClient();
 
