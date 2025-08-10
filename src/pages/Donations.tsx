@@ -1,46 +1,41 @@
+
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { AddCollectionModal } from '@/components/AddCollectionModal';
-import { AddExpenseModal } from '@/components/AddExpenseModal';
-import { useAuth } from '@/context/SupabaseAuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { 
-  IndianRupee, 
-  TrendingUp, 
-  Calendar, 
-  Users, 
-  Search,
-  ArrowLeft,
-  Download,
-  Plus,
-  Minus,
-  Wallet,
-  Receipt
-} from 'lucide-react';
+import { ArrowLeft, Search, Filter, DollarSign, Users, Calendar, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 
-// Admin contact mapping
-const ADMIN_PHONES: Record<string, string> = {
-  'Mukkamalla Manohar Reddy': '7569158421',
-  'Ravilla Balaji': '8179914192',
-  'Siddavatam Harsha': '9392312978',
-  'Chagam Madhu Reddy': '7095712647',
-};
+interface DonationData {
+  id: string;
+  person_name: string;
+  donor_name?: string;
+  donor_phone?: string;
+  amount: number;
+  payment_method: string;
+  receiving_admin_name: string;
+  created_at: string;
+}
 
-export const Donations: React.FC = () => {
-  const { profile } = useAuth();
-  const [persons, setPersons] = useState<any[]>([]);
-  const [donations, setDonations] = useState<any[]>([]);
-  const [collections, setCollections] = useState<any[]>([]);
-  const [expenses, setExpenses] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
-  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+interface PersonData {
+  id: string;
+  name: string;
+  amount_paid: number;
+  payment_method: string;
+  admin_name: string;
+  created_at: string;
+}
+
+const Donations = () => {
   const navigate = useNavigate();
+  const [donations, setDonations] = useState<DonationData[]>([]);
+  const [persons, setPersons] = useState<PersonData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterMethod, setFilterMethod] = useState<string>('all');
 
   useEffect(() => {
     loadAllData();
@@ -50,42 +45,29 @@ export const Donations: React.FC = () => {
     try {
       setLoading(true);
 
-      // Load persons with their payments
-      const { data: personsData, error: personsError } = await supabase
-        .from('persons')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (personsError) throw personsError;
-
       // Load donations
       const { data: donationsData, error: donationsError } = await supabase
         .from('donations')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (donationsError) throw donationsError;
+      if (donationsError) {
+        console.error('Error loading donations:', donationsError);
+      } else {
+        setDonations(donationsData || []);
+      }
 
-      // Load admin collections
-      const { data: collectionsData, error: collectionsError } = await supabase
-        .from('admin_collections')
+      // Load persons data
+      const { data: personsData, error: personsError } = await supabase
+        .from('persons')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (collectionsError) throw collectionsError;
-
-      // Load expenses
-      const { data: expensesData, error: expensesError } = await supabase
-        .from('admin_expenses')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (expensesError) throw expensesError;
-
-      setPersons(personsData || []);
-      setDonations(donationsData || []);
-      setCollections(collectionsData || []);
-      setExpenses(expensesData || []);
+      if (personsError) {
+        console.error('Error loading persons:', personsError);
+      } else {
+        setPersons(personsData || []);
+      }
 
     } catch (error) {
       console.error('Error loading data:', error);
@@ -94,493 +76,263 @@ export const Donations: React.FC = () => {
     }
   };
 
-  // Calculate totals
-  const totalFromPersons = persons.reduce((sum, person) => sum + Number(person.amount_paid || 0), 0);
-  const totalFromDonations = donations.reduce((sum, donation) => sum + Number(donation.amount), 0);
-  const totalFromCollections = collections.reduce((sum, collection) => sum + Number(collection.amount), 0);
-  const totalFromExpenses = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
+  // Combine and filter data
+  const allContributions = [
+    ...donations.map(d => ({
+      id: d.id,
+      type: 'donation' as const,
+      name: d.donor_name || d.person_name,
+      phone: d.donor_phone,
+      amount: d.amount,
+      payment_method: d.payment_method,
+      admin_name: d.receiving_admin_name,
+      created_at: d.created_at
+    })),
+    ...persons.filter(p => p.amount_paid > 0).map(p => ({
+      id: p.id,
+      type: 'person' as const,
+      name: p.name,
+      phone: undefined,
+      amount: p.amount_paid,
+      payment_method: p.payment_method,
+      admin_name: p.admin_name,
+      created_at: p.created_at
+    }))
+  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-  const grandTotal = totalFromPersons + totalFromDonations + totalFromCollections;
-  const availableAmount = grandTotal - totalFromExpenses;
-
-  // Group admin data for collections and expenses
-  const adminData = new Map();
-  
-  // Process collections
-  collections.forEach(collection => {
-    if (!adminData.has(collection.admin_id)) {
-      adminData.set(collection.admin_id, {
-        adminId: collection.admin_id,
-        adminName: collection.admin_name,
-        totalCollected: 0,
-        totalExpenses: 0
-      });
-    }
-    adminData.get(collection.admin_id).totalCollected += Number(collection.amount);
-  });
-
-  // Process expenses
-  expenses.forEach(expense => {
-    if (!adminData.has(expense.admin_id)) {
-      adminData.set(expense.admin_id, {
-        adminId: expense.admin_id,
-        adminName: expense.admin_name,
-        totalCollected: 0,
-        totalExpenses: 0
-      });
-    }
-    adminData.get(expense.admin_id).totalExpenses += Number(expense.amount);
-  });
-
-  // Calculate daily reports from donations
-  const dailyReports: {[key: string]: number} = {};
-  donations.forEach(donation => {
-    const date = new Date(donation.created_at).toLocaleDateString('en-IN');
-    dailyReports[date] = (dailyReports[date] || 0) + Number(donation.amount);
-  });
-
-  const filteredPersons = persons.filter(person =>
-    person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    person.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    person.admin_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const exportReport = () => {
-    // Create CSV content
-    const csvHeaders = [
-      'Date',
-      'Type',
-      'Name/Purpose',
-      'Amount',
-      'Payment Method',
-      'Admin',
-      'Phone',
-      'Address'
-    ];
-
-    const csvRows = [];
+  const filteredContributions = allContributions.filter(contribution => {
+    const matchesSearch = contribution.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         contribution.admin_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (contribution.phone && contribution.phone.includes(searchTerm));
     
-    // Add persons data
-    persons.forEach(person => {
-      csvRows.push([
-        new Date(person.created_at).toLocaleDateString('en-IN'),
-        'Member Payment',
-        person.name,
-        person.amount_paid || 0,
-        person.payment_method === 'handcash' ? 'Hand Cash' : 'PhonePe',
-        person.admin_name,
-        person.phone_number,
-        person.address
-      ]);
-    });
+    const matchesFilter = filterMethod === 'all' || contribution.payment_method === filterMethod;
+    
+    return matchesSearch && matchesFilter;
+  });
 
-    // Add donations
-    donations.forEach(donation => {
-      csvRows.push([
-        new Date(donation.created_at).toLocaleDateString('en-IN'),
-        'Donation',
-        donation.donor_name || 'Anonymous',
-        donation.amount,
-        donation.payment_method === 'handcash' ? 'Hand Cash' : 'PhonePe',
-        donation.receiving_admin_name,
-        donation.donor_phone || '',
-        ''
-      ]);
-    });
+  const totalAmount = filteredContributions.reduce((sum, item) => sum + Number(item.amount), 0);
+  const totalCount = filteredContributions.length;
 
-    // Add collections
-    collections.forEach(collection => {
-      csvRows.push([
-        new Date(collection.created_at).toLocaleDateString('en-IN'),
-        'Collection',
-        'Direct Collection',
-        collection.amount,
-        'Mixed',
-        collection.admin_name,
-        '',
-        ''
-      ]);
-    });
-
-    // Add expenses
-    expenses.forEach(expense => {
-      csvRows.push([
-        new Date(expense.created_at).toLocaleDateString('en-IN'),
-        'Expense',
-        expense.purpose,
-        -Number(expense.amount),
-        'Expense',
-        expense.admin_name,
-        '',
-        ''
-      ]);
-    });
-
-    // Create CSV content
-    const csvContent = [
-      csvHeaders.join(','),
-      ...csvRows.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
-
-    // Create and download file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `depur-vinayaka-chavithi-report-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
   };
 
-  return (
-    <div className="min-h-screen py-4 sm:py-8 px-2 sm:px-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <div className="flex-1">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/')}
-              className="mb-4 w-full sm:w-auto"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
-            </Button>
-            <h1 className="text-2xl sm:text-3xl font-bold ganesh-gradient bg-clip-text text-transparent">
-              Collection & Expense Management
-            </h1>
-            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
-              Track collections, expenses, and available funds for Depur Vinayaka Chavithi 2k25
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2">
-            {profile && (
-              <>
-                <Button onClick={() => setIsCollectionModalOpen(true)} className="w-full sm:w-auto">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Collection
-                </Button>
-                <Button variant="outline" onClick={() => setIsExpenseModalOpen(true)} className="w-full sm:w-auto">
-                  <Minus className="w-4 h-4 mr-2" />
-                  Add Expense
-                </Button>
-              </>
-            )}
-            <Button variant="outline" onClick={exportReport} className="w-full sm:w-auto">
-              <Download className="w-4 h-4 mr-2" />
-              Export Report
-            </Button>
-          </div>
-        </div>
+  const getPaymentMethodBadge = (method: string) => {
+    const variants = {
+      'phonepay': 'bg-blue-100 text-blue-800 border-blue-200',
+      'handcash': 'bg-green-100 text-green-800 border-green-200',
+      'online': 'bg-purple-100 text-purple-800 border-purple-200'
+    };
+    
+    return variants[method as keyof typeof variants] || 'bg-gray-100 text-gray-800 border-gray-200';
+  };
 
-        {/* Summary Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
-          <Card className="festival-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Total Collected</CardTitle>
-              <IndianRupee className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg sm:text-xl lg:text-2xl font-bold text-primary">₹{grandTotal}</div>
-              <p className="text-xs text-muted-foreground">
-                All collections combined
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="festival-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Total Expenses</CardTitle>
-              <Receipt className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg sm:text-xl lg:text-2xl font-bold text-red-600">₹{totalFromExpenses}</div>
-              <p className="text-xs text-muted-foreground">
-                All expenses
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="festival-card col-span-2 lg:col-span-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Available Amount</CardTitle>
-              <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600">₹{availableAmount}</div>
-              <p className="text-xs text-muted-foreground">
-                After expenses
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="festival-card col-span-2 lg:col-span-1">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Admin Collections</CardTitle>
-              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">₹{totalFromCollections}</div>
-              <p className="text-xs text-muted-foreground">
-                Direct admin collections
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-        {/* Admin Summary */}
-        {adminData.size > 0 && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">
-              <span className="ganesh-gradient bg-clip-text text-transparent">
-                Admin-wise Summary
-              </span>
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Array.from(adminData.values()).map((admin) => (
-                <Card key={admin.adminId} className="festival-card">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base sm:text-lg">
-                      {admin.adminName}
-                      {ADMIN_PHONES[admin.adminName] && (
-                        <span className="text-xs sm:text-sm text-primary font-medium ml-2 block sm:inline">
-                          📞 {ADMIN_PHONES[admin.adminName]}
-                        </span>
-                      )}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Collected:</span>
-                        <span className="text-base sm:text-lg font-bold text-primary">₹{admin.totalCollected}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Expenses:</span>
-                        <span className="text-base sm:text-lg font-bold text-red-600">₹{admin.totalExpenses}</span>
-                      </div>
-                      <div className="flex justify-between items-center border-t pt-2">
-                        <span className="text-sm font-medium">Available:</span>
-                        <span className="text-base sm:text-lg font-bold text-green-600">
-                          ₹{admin.totalCollected - admin.totalExpenses}
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background p-3 sm:p-6">
+        <div className="container mx-auto max-w-6xl">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-muted rounded w-1/3"></div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-24 bg-muted rounded"></div>
+              ))}
+            </div>
+            <div className="space-y-3">
+              {[1, 2, 3, 4, 5].map(i => (
+                <div key={i} className="h-20 bg-muted rounded"></div>
               ))}
             </div>
           </div>
-        )}
+        </div>
+      </div>
+    );
+  }
 
-        {/* Daily Collection Reports */}
-        {Object.keys(dailyReports).length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">
-              <span className="ganesh-gradient bg-clip-text text-transparent">
-                Daily Collection Reports
-              </span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(dailyReports)
-                .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
-                .map(([date, amount]) => (
-                  <Card key={date} className="festival-card">
-                    <CardContent className="text-center py-4">
-                      <Calendar className="w-6 h-6 text-primary mx-auto mb-2" />
-                      <div className="font-semibold mb-1">{date}</div>
-                      <div className="text-xl font-bold text-primary">₹{amount}</div>
-                    </CardContent>
-                  </Card>
-                ))}
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-3 sm:p-6 max-w-6xl">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-3">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/')}
+              className="text-xs sm:text-sm px-2 sm:px-3"
+            >
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              Back
+            </Button>
+            <div>
+              <h1 className="text-xl sm:text-3xl font-bold text-primary">All Contributions</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                Track all donations and payments
+              </p>
             </div>
           </div>
-        )}
+        </div>
 
-        {/* Person Payments Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">
-            <span className="ganesh-gradient bg-clip-text text-transparent">
-              Member Contributions (₹{totalFromPersons})
-            </span>
-          </h2>
-          
-          {/* Search */}
-          <div className="relative mb-6">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-8">
+          <Card className="bg-gradient-to-br from-green-50 to-emerald-100 border-green-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm sm:text-base font-medium text-green-800 flex items-center gap-2">
+                <DollarSign className="w-4 h-4" />
+                Total Amount
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-2xl font-bold text-green-900">
+                {formatCurrency(totalAmount)}
+              </div>
+              <p className="text-xs text-green-700 mt-1">From all contributions</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm sm:text-base font-medium text-blue-800 flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Contributors
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-2xl font-bold text-blue-900">
+                {totalCount}
+              </div>
+              <p className="text-xs text-blue-700 mt-1">People contributed</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-purple-50 to-violet-100 border-purple-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm sm:text-base font-medium text-purple-800 flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Latest Entry
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm sm:text-base font-bold text-purple-900">
+                {filteredContributions.length > 0 
+                  ? format(new Date(filteredContributions[0].created_at), 'MMM dd, yyyy')
+                  : 'No entries'
+                }
+              </div>
+              <p className="text-xs text-purple-700 mt-1">Most recent</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Search and Filter */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               type="text"
-              placeholder="Search by name, address, or admin..."
+              placeholder="Search by name, admin, or phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12"
+              className="pl-10 text-sm sm:text-base"
             />
           </div>
+          
+          <div className="flex gap-2">
+            <Button
+              variant={filterMethod === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilterMethod('all')}
+              className="text-xs sm:text-sm"
+            >
+              All
+            </Button>
+            <Button
+              variant={filterMethod === 'phonepay' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilterMethod('phonepay')}
+              className="text-xs sm:text-sm"
+            >
+              PhonePe
+            </Button>
+            <Button
+              variant={filterMethod === 'handcash' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilterMethod('handcash')}
+              className="text-xs sm:text-sm"
+            >
+              Cash
+            </Button>
+          </div>
+        </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredPersons.map((person) => (
-                <Card key={person.id} className="festival-card">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base sm:text-lg">{person.name}</CardTitle>
-                    <CardDescription className="text-sm">{person.address}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Amount:</span>
-                        <span className="text-base sm:text-lg font-bold text-primary">₹{person.amount_paid || 0}</span>
+        {/* Contributions List */}
+        <div className="space-y-3 sm:space-y-4">
+          {filteredContributions.length === 0 ? (
+            <Card className="text-center py-8 sm:py-12">
+              <CardContent>
+                <div className="text-4xl sm:text-6xl mb-4">💰</div>
+                <h3 className="text-lg sm:text-xl font-semibold mb-2">No Contributions Found</h3>
+                <p className="text-muted-foreground text-sm sm:text-base">
+                  {searchTerm ? 'Try adjusting your search criteria.' : 'No contributions have been recorded yet.'}
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            filteredContributions.map((contribution) => (
+              <Card key={contribution.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-3 sm:p-6">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                        <h3 className="font-semibold text-sm sm:text-lg text-primary truncate">
+                          {contribution.name}
+                        </h3>
+                        <div className="flex items-center gap-2">
+                          <Badge 
+                            variant="secondary" 
+                            className={`text-xs ${getPaymentMethodBadge(contribution.payment_method)}`}
+                          >
+                            {contribution.payment_method === 'phonepay' ? 'PhonePe' : 
+                             contribution.payment_method === 'handcash' ? 'Hand Cash' : 
+                             contribution.payment_method}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {contribution.type === 'donation' ? 'Donation' : 'Person'}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Method:</span>
-                        <Badge variant={person.payment_method === 'handcash' ? 'default' : 'secondary'}>
-                          {person.payment_method === 'handcash' ? 'Hand Cash' : 'PhonePe'}
-                        </Badge>
+                      
+                      <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
+                        <p>Admin: <span className="font-medium">{contribution.admin_name}</span></p>
+                        {contribution.phone && (
+                          <p className="flex items-center gap-1">
+                            <Phone className="w-3 h-3" />
+                            {contribution.phone}
+                          </p>
+                        )}
+                        <p>Date: {format(new Date(contribution.created_at), 'PPp')}</p>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Phone:</span>
-                        <span className="text-xs sm:text-sm">{person.phone_number}</span>
+                    </div>
+                    
+                    <div className="text-right">
+                      <div className="text-lg sm:text-xl font-bold text-green-600">
+                        {formatCurrency(contribution.amount)}
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Added by:</span>
-                        <span className="text-xs sm:text-sm">
-                          {person.admin_name}
-                          {ADMIN_PHONES[person.admin_name] && (
-                            <span className="text-primary font-medium ml-1 block sm:inline">
-                              📞 {ADMIN_PHONES[person.admin_name]}
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Date:</span>
-                      <span className="text-sm">{new Date(person.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+            ))
+          )}
         </div>
-
-        {/* Additional Donations Section */}
-        {donations.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">
-              <span className="ganesh-gradient bg-clip-text text-transparent">
-                Member Contributions (₹{totalFromPersons})
-              </span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {donations.map((donation) => (
-                <Card key={donation.id} className="festival-card">
-                  <CardHeader className="pb-3">
-                     <CardTitle className="text-base sm:text-lg">{donation.donor_name || 'Anonymous'}</CardTitle>
-                     <CardDescription className="text-sm">Donated to {donation.person_name}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Amount:</span>
-                        <span className="text-base sm:text-lg font-bold text-primary">₹{donation.amount}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Method:</span>
-                        <Badge variant={donation.payment_method === 'handcash' ? 'default' : 'secondary'}>
-                          {donation.payment_method === 'handcash' ? 'Hand Cash' : 'PhonePe'}
-                        </Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Received by:</span>
-                         <span className="text-xs sm:text-sm">
-                           {donation.receiving_admin_name}
-                           {ADMIN_PHONES[donation.receiving_admin_name] && (
-                             <span className="text-primary font-medium ml-1 block sm:inline">
-                               📞 {ADMIN_PHONES[donation.receiving_admin_name]}
-                             </span>
-                           )}
-                         </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Date:</span>
-                        <span className="text-xs sm:text-sm">{new Date(donation.created_at).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Expense History */}
-        {expenses.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">
-              <span className="ganesh-gradient bg-clip-text text-transparent">
-                Expense History
-              </span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {expenses
-                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-                .map((expense) => (
-                  <Card key={expense.id} className="festival-card">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg text-red-600">₹{expense.amount}</CardTitle>
-                      <CardDescription>{expense.purpose}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">Spent by:</span>
-                          <span className="text-sm">
-                            {expense.admin_name}
-                            {ADMIN_PHONES[expense.admin_name] && (
-                              <span className="text-primary font-medium ml-1">
-                                📞 {ADMIN_PHONES[expense.admin_name]}
-                              </span>
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">Date:</span>
-                          <span className="text-sm">{new Date(expense.created_at).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-            </div>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {collections.length === 0 && donations.length === 0 && persons.length === 0 && (
-          <Card className="festival-card">
-            <CardContent className="text-center py-16">
-              <IndianRupee className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
-              <h3 className="text-2xl font-semibold mb-4">No Data Yet</h3>
-              <p className="text-muted-foreground">
-                No collections or expenses have been recorded yet. Start by adding a collection.
-              </p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Modals */}
-        <AddCollectionModal
-          open={isCollectionModalOpen}
-          onOpenChange={setIsCollectionModalOpen}
-          onSuccess={loadAllData}
-        />
-
-        <AddExpenseModal
-          open={isExpenseModalOpen}
-          onOpenChange={setIsExpenseModalOpen}
-          onSuccess={loadAllData}
-        />
       </div>
     </div>
   );
 };
+
+export default Donations;
