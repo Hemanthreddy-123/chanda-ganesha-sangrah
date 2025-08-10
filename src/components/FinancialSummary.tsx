@@ -49,6 +49,20 @@ const FinancialSummary = () => {
     loadFinancialData();
   }, []);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('realtime-financial')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_collections' }, () => loadFinancialData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_expenses' }, () => loadFinancialData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'financial_transactions' }, () => loadFinancialData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'donations' }, () => loadFinancialData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'persons' }, () => loadFinancialData())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
   const loadFinancialData = async () => {
     try {
       setLoading(true);
@@ -81,6 +95,14 @@ const FinancialSummary = () => {
 
       if (expensesError) throw expensesError;
 
+      // Load written/book-in-cash entries
+      const { data: writtenEntries, error: writtenError } = await supabase
+        .from('financial_transactions')
+        .select('id')
+        .eq('transaction_type', 'written');
+
+      if (writtenError) throw writtenError;
+
       // Calculate totals
       const personsTotal = persons?.reduce((sum, person) => sum + Number(person.amount_paid), 0) || 0;
       const donationsTotal = donations?.reduce((sum, donation) => sum + Number(donation.amount), 0) || 0;
@@ -104,8 +126,8 @@ const FinancialSummary = () => {
         .filter(payment => payment.method === 'handcash')
         .reduce((sum, payment) => sum + Number(payment.amount), 0);
 
-      // Count people in book (persons with amount > 0)
-      const peopleInBook = persons?.filter(p => Number(p.amount_paid) > 0).length || 0;
+      // Count people in book (written/book-in-cash entries)
+      const peopleInBook = writtenEntries?.length || 0;
       
       // Count people given hand money (handcash payments)
       const peopleGivenHandMoney = allPayments.filter(p => p.method === 'handcash').length;

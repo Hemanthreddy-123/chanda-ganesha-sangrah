@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Search, Filter, DollarSign, Users, Calendar, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import AddWrittenModal from '@/components/AddWrittenModal';
 
 interface DonationData {
   id: string;
@@ -36,6 +37,7 @@ const Donations = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterMethod, setFilterMethod] = useState<string>('all');
+  const [isWrittenOpen, setIsWrittenOpen] = useState(false);
 
   useEffect(() => {
     loadAllData();
@@ -175,6 +177,11 @@ const Donations = () => {
                 Track all donations and payments
               </p>
             </div>
+          </div>
+          <div className="w-full sm:w-auto">
+            <Button size="sm" className="w-full sm:w-auto" onClick={() => setIsWrittenOpen(true)}>
+              Add Book in Cash
+            </Button>
           </div>
         </div>
 
@@ -330,6 +337,11 @@ const Donations = () => {
             ))
           )}
         </div>
+        <AddWrittenModal 
+          open={isWrittenOpen}
+          onOpenChange={setIsWrittenOpen}
+          onSuccess={loadAllData}
+        />
       </div>
     </div>
   );

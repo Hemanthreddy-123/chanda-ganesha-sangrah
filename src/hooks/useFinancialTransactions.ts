@@ -7,7 +7,7 @@ export interface FinancialTransaction {
   id: string;
   admin_id: string;
   admin_name: string;
-  transaction_type: 'donation' | 'expense' | 'collection';
+  transaction_type: 'donation' | 'expense' | 'collection' | 'written';
   amount: number;
   description: string;
   payment_method: string;
