@@ -33,24 +33,9 @@ const FinancialSummary = () => {
     totalDonations: 0
   });
   const [loading, setLoading] = useState(true);
-  const [bookcashData, setBookcashData] = useState([]);
 
   useEffect(() => {
     loadFinancialData();
-    
-    // Set up real-time subscriptions
-    const channel = supabase
-      .channel('financial-updates')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'persons' }, loadFinancialData)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'donations' }, loadFinancialData)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_collections' }, loadFinancialData)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_expenses' }, loadFinancialData)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookcash' }, loadFinancialData)
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   const loadFinancialData = async () => {
@@ -85,22 +70,13 @@ const FinancialSummary = () => {
 
       if (expensesError) throw expensesError;
 
-      // Load bookcash entries
-      const { data: bookcash, error: bookcashError } = await supabase
-        .from('bookcash')
-        .select('amount, person_name');
-
-      if (bookcashError) throw bookcashError;
-      setBookcashData(bookcash || []);
-
       // Calculate totals
       const personsTotal = persons?.reduce((sum, person) => sum + Number(person.amount_paid), 0) || 0;
       const donationsTotal = donations?.reduce((sum, donation) => sum + Number(donation.amount), 0) || 0;
       const collectionsTotal = collections?.reduce((sum, collection) => sum + Number(collection.amount), 0) || 0;
       const expensesTotal = expenses?.reduce((sum, expense) => sum + Number(expense.amount), 0) || 0;
-      const bookcashTotal = bookcash?.reduce((sum, entry) => sum + Number(entry.amount), 0) || 0;
 
-      const totalCollected = personsTotal + donationsTotal + collectionsTotal + bookcashTotal;
+      const totalCollected = personsTotal + donationsTotal + collectionsTotal;
       const availableAmount = totalCollected - expensesTotal;
 
       // Calculate payment method totals
@@ -259,18 +235,6 @@ const FinancialSummary = () => {
           <CardContent>
             <div className="text-xl font-bold text-orange-900">
               {financialData.totalDonations}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-slate-50 to-gray-100 border-slate-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-slate-800">Book Cash</CardTitle>
-            <DollarSign className="h-4 w-4 text-slate-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-xl font-bold text-slate-900">
-              {bookcashData.length}
             </div>
           </CardContent>
         </Card>
