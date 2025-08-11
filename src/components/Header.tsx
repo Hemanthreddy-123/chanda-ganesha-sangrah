@@ -25,9 +25,9 @@ export const Header: React.FC<HeaderProps> = () => {
               />
             </div>
             <div>
-              <h1 className="text-2xl font-bold ganesh-gradient bg-clip-text text-transparent">
-                Depur Vinayaka Chavithi 2k25
-              </h1>
+            <h1 className="text-lg md:text-2xl font-bold ganesh-gradient bg-clip-text text-transparent">
+              Depur Vinayaka Chavithi 2k25
+            </h1>
               <p className="text-sm text-muted-foreground">Festival Collection Portal</p>
             </div>
           </Link>
@@ -71,13 +71,14 @@ export const Header: React.FC<HeaderProps> = () => {
                 </Button>
               </div>
             ) : (
-              <Button 
-                variant="default" 
-                size="sm" 
-                onClick={() => window.location.href = '/auth'}
-              >
-                Admin Login
-              </Button>
+            <Button 
+              variant="default" 
+              size="sm" 
+              onClick={() => window.location.href = '/auth'}
+              className="hidden md:flex"
+            >
+              Admin Login
+            </Button>
             )}
           </div>
         </div>

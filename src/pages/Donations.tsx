@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AddCollectionModal } from '@/components/AddCollectionModal';
 import { AddExpenseModal } from '@/components/AddExpenseModal';
+import AddBookcashModal from '@/components/AddBookcashModal';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -39,6 +40,7 @@ export const Donations: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [isBookcashModalOpen, setIsBookcashModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -265,6 +267,10 @@ export const Donations: React.FC = () => {
                 <Button variant="outline" onClick={() => setIsExpenseModalOpen(true)} className="w-full sm:w-auto">
                   <Minus className="w-4 h-4 mr-2" />
                   Add Expense
+                </Button>
+                <Button onClick={() => setIsBookcashModalOpen(true)} className="w-full sm:w-auto bg-amber-600 hover:bg-amber-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Book Cash
                 </Button>
               </>
             )}
@@ -579,6 +585,12 @@ export const Donations: React.FC = () => {
           open={isExpenseModalOpen}
           onOpenChange={setIsExpenseModalOpen}
           onSuccess={loadAllData}
+        />
+
+        <AddBookcashModal
+          open={isBookcashModalOpen}
+          onOpenChange={setIsBookcashModalOpen}
+          onBookcashAdded={loadAllData}
         />
       </div>
     </div>
