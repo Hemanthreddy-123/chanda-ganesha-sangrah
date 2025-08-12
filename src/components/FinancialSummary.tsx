@@ -20,6 +20,7 @@ interface FinancialData {
   handCashAmount: number;
   totalPersons: number;
   totalDonations: number;
+  totalBookcash: number;
 }
 
 const FinancialSummary = () => {
@@ -30,12 +31,28 @@ const FinancialSummary = () => {
     phonePeAmount: 0,
     handCashAmount: 0,
     totalPersons: 0,
-    totalDonations: 0
+    totalDonations: 0,
+    totalBookcash: 0
   });
   const [loading, setLoading] = useState(true);
+  const [bookcashData, setBookcashData] = useState([]);
 
   useEffect(() => {
     loadFinancialData();
+    
+    // Set up real-time subscriptions
+    const channel = supabase
+      .channel('financial-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'persons' }, loadFinancialData)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'donations' }, loadFinancialData)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_collections' }, loadFinancialData)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_expenses' }, loadFinancialData)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookcash' }, loadFinancialData)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadFinancialData = async () => {
@@ -70,12 +87,22 @@ const FinancialSummary = () => {
 
       if (expensesError) throw expensesError;
 
+      // Load bookcash entries
+      const { data: bookcash, error: bookcashError } = await supabase
+        .from('bookcash')
+        .select('amount, person_name');
+
+      if (bookcashError) throw bookcashError;
+      setBookcashData(bookcash || []);
+
       // Calculate totals
       const personsTotal = persons?.reduce((sum, person) => sum + Number(person.amount_paid), 0) || 0;
       const donationsTotal = donations?.reduce((sum, donation) => sum + Number(donation.amount), 0) || 0;
       const collectionsTotal = collections?.reduce((sum, collection) => sum + Number(collection.amount), 0) || 0;
       const expensesTotal = expenses?.reduce((sum, expense) => sum + Number(expense.amount), 0) || 0;
+      const bookcashTotal = bookcash?.reduce((sum, entry) => sum + Number(entry.amount), 0) || 0;
 
+      // Exclude bookcash from total collected - it's separate
       const totalCollected = personsTotal + donationsTotal + collectionsTotal;
       const availableAmount = totalCollected - expensesTotal;
 
@@ -86,11 +113,11 @@ const FinancialSummary = () => {
       ];
 
       const phonePeAmount = allPayments
-        .filter(payment => payment.method === 'phonepay')
+        .filter(payment => payment.method === 'upi')
         .reduce((sum, payment) => sum + Number(payment.amount), 0);
 
       const handCashAmount = allPayments
-        .filter(payment => payment.method === 'handcash')
+        .filter(payment => payment.method === 'cash')
         .reduce((sum, payment) => sum + Number(payment.amount), 0);
 
       setFinancialData({
@@ -100,7 +127,8 @@ const FinancialSummary = () => {
         phonePeAmount,
         handCashAmount,
         totalPersons: persons?.length || 0,
-        totalDonations: donations?.length || 0
+        totalDonations: donations?.length || 0,
+        totalBookcash: bookcashTotal
       });
 
     } catch (error) {
@@ -190,10 +218,10 @@ const FinancialSummary = () => {
       </div>
 
       {/* Payment Method Breakdown */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="bg-gradient-to-br from-purple-50 to-violet-100 border-purple-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-purple-800">PhonePe</CardTitle>
+            <CardTitle className="text-sm font-medium text-purple-800">UPI Payments</CardTitle>
             <CreditCard className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
@@ -205,13 +233,28 @@ const FinancialSummary = () => {
 
         <Card className="bg-gradient-to-br from-amber-50 to-yellow-100 border-amber-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-amber-800">Hand Cash</CardTitle>
+            <CardTitle className="text-sm font-medium text-amber-800">Cash Payments</CardTitle>
             <IndianRupee className="h-4 w-4 text-amber-600" />
           </CardHeader>
           <CardContent>
             <div className="text-xl font-bold text-amber-900">
               {formatCurrency(financialData.handCashAmount)}
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-pink-50 to-rose-100 border-pink-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-pink-800">Book Cash</CardTitle>
+            <DollarSign className="h-4 w-4 text-pink-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-pink-900">
+              {formatCurrency(financialData.totalBookcash)}
+            </div>
+            <p className="text-xs text-pink-700 mt-1">
+              {bookcashData.length} entries
+            </p>
           </CardContent>
         </Card>
 

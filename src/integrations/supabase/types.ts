@@ -284,6 +284,42 @@ export type Database = {
         }
         Relationships: []
       }
+      bookcash: {
+        Row: {
+          admin_id: string
+          admin_name: string
+          amount: number
+          created_at: string
+          date: string
+          description: string | null
+          id: string
+          person_name: string
+          updated_at: string
+        }
+        Insert: {
+          admin_id: string
+          admin_name: string
+          amount: number
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          person_name: string
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: string
+          admin_name?: string
+          amount?: number
+          created_at?: string
+          date?: string
+          description?: string | null
+          id?: string
+          person_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       donations: {
         Row: {
           amount: number
@@ -441,7 +477,6 @@ export type Database = {
       }
       persons: {
         Row: {
-          address: string
           admin_id: string
           admin_name: string
           amount_paid: number | null
@@ -449,11 +484,9 @@ export type Database = {
           id: string
           name: string
           payment_method: string | null
-          phone_number: string
           updated_at: string
         }
         Insert: {
-          address: string
           admin_id: string
           admin_name: string
           amount_paid?: number | null
@@ -461,11 +494,9 @@ export type Database = {
           id?: string
           name: string
           payment_method?: string | null
-          phone_number: string
           updated_at?: string
         }
         Update: {
-          address?: string
           admin_id?: string
           admin_name?: string
           amount_paid?: number | null
@@ -473,7 +504,6 @@ export type Database = {
           id?: string
           name?: string
           payment_method?: string | null
-          phone_number?: string
           updated_at?: string
         }
         Relationships: []

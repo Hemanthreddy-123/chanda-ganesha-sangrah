@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AddCollectionModal } from '@/components/AddCollectionModal';
 import { AddExpenseModal } from '@/components/AddExpenseModal';
+import { AddBookcashModal } from '@/components/AddBookcashModal';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -36,9 +37,11 @@ export const Donations: React.FC = () => {
   const [donations, setDonations] = useState<any[]>([]);
   const [collections, setCollections] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
+  const [bookcash, setBookcash] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [isBookcashModalOpen, setIsBookcashModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -82,10 +85,19 @@ export const Donations: React.FC = () => {
 
       if (expensesError) throw expensesError;
 
+      // Load bookcash
+      const { data: bookcashData, error: bookcashError } = await supabase
+        .from('bookcash')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (bookcashError) throw bookcashError;
+
       setPersons(personsData || []);
       setDonations(donationsData || []);
       setCollections(collectionsData || []);
       setExpenses(expensesData || []);
+      setBookcash(bookcashData || []);
 
     } catch (error) {
       console.error('Error loading data:', error);
@@ -99,6 +111,7 @@ export const Donations: React.FC = () => {
   const totalFromDonations = donations.reduce((sum, donation) => sum + Number(donation.amount), 0);
   const totalFromCollections = collections.reduce((sum, collection) => sum + Number(collection.amount), 0);
   const totalFromExpenses = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
+  const totalFromBookcash = bookcash.reduce((sum, entry) => sum + Number(entry.amount), 0);
 
   const grandTotal = totalFromPersons + totalFromDonations + totalFromCollections;
   const availableAmount = grandTotal - totalFromExpenses;
@@ -141,7 +154,6 @@ export const Donations: React.FC = () => {
 
   const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    person.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
     person.admin_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -266,6 +278,10 @@ export const Donations: React.FC = () => {
                   <Minus className="w-4 h-4 mr-2" />
                   Add Expense
                 </Button>
+                <Button onClick={() => setIsBookcashModalOpen(true)} className="w-full sm:w-auto bg-amber-600 hover:bg-amber-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Book Cash
+                </Button>
               </>
             )}
             <Button variant="outline" onClick={exportReport} className="w-full sm:w-auto">
@@ -276,7 +292,7 @@ export const Donations: React.FC = () => {
         </div>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-6 mb-8">
           <Card className="festival-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Total Collected</CardTitle>
@@ -316,7 +332,7 @@ export const Donations: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="festival-card col-span-2 lg:col-span-1">
+          <Card className="festival-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Admin Collections</CardTitle>
               <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
@@ -325,6 +341,19 @@ export const Donations: React.FC = () => {
               <div className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">₹{totalFromCollections}</div>
               <p className="text-xs text-muted-foreground">
                 Direct admin collections
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="festival-card">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium">Book Cash</CardTitle>
+              <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-xl lg:text-2xl font-bold text-amber-600">₹{totalFromBookcash}</div>
+              <p className="text-xs text-muted-foreground">
+                Separate book cash entries
               </p>
             </CardContent>
           </Card>
@@ -407,11 +436,11 @@ export const Donations: React.FC = () => {
           </h2>
           
           {/* Search */}
-          <div className="relative mb-6">
+            <div className="relative mb-6">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <Input
               type="text"
-              placeholder="Search by name, address, or admin..."
+              placeholder="Search by name or admin..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-12"
@@ -423,7 +452,6 @@ export const Donations: React.FC = () => {
                 <Card key={person.id} className="festival-card">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base sm:text-lg">{person.name}</CardTitle>
-                    <CardDescription className="text-sm">{person.address}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
@@ -433,13 +461,9 @@ export const Donations: React.FC = () => {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Method:</span>
-                        <Badge variant={person.payment_method === 'handcash' ? 'default' : 'secondary'}>
-                          {person.payment_method === 'handcash' ? 'Hand Cash' : 'PhonePe'}
+                        <Badge variant={person.payment_method === 'cash' ? 'default' : 'secondary'}>
+                          {person.payment_method === 'cash' ? 'Cash' : 'UPI'}
                         </Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Phone:</span>
-                        <span className="text-xs sm:text-sm">{person.phone_number}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Added by:</span>
@@ -454,13 +478,13 @@ export const Donations: React.FC = () => {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Date:</span>
-                      <span className="text-sm">{new Date(person.created_at).toLocaleDateString()}</span>
+                        <span className="text-sm">{new Date(person.created_at).toLocaleDateString()}</span>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
         </div>
 
         {/* Additional Donations Section */}
@@ -579,6 +603,12 @@ export const Donations: React.FC = () => {
           open={isExpenseModalOpen}
           onOpenChange={setIsExpenseModalOpen}
           onSuccess={loadAllData}
+        />
+
+        <AddBookcashModal
+          open={isBookcashModalOpen}
+          onOpenChange={setIsBookcashModalOpen}
+          onBookcashAdded={loadAllData}
         />
       </div>
     </div>
