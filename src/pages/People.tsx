@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { ArrowLeft, Plus, Search, IndianRupee, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/SupabaseAuthContext';
+import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -22,6 +23,7 @@ interface PeopleRecord {
 export const People: React.FC = () => {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
+  const { isAdmin, loading: roleLoading } = useUserRole();
   const [people, setPeople] = useState<PeopleRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,8 +58,8 @@ export const People: React.FC = () => {
   const handleAddPerson = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!user || !profile) {
-      toast.error('Please login to add people');
+    if (!user || !profile || !isAdmin) {
+      toast.error('Only admins can add people');
       return;
     }
 
@@ -96,23 +98,7 @@ export const People: React.FC = () => {
 
   const totalAmount = people.reduce((sum, person) => sum + Number(person.amount || 0), 0);
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Access Denied</CardTitle>
-            <CardDescription>Please login to access the People page</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button onClick={() => navigate('/donations')} className="w-full">
-              Go Back to Donations
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // Remove the login requirement - everyone can view people data
 
   return (
     <div className="min-h-screen py-4 sm:py-8 px-2 sm:px-4">
@@ -132,13 +118,15 @@ export const People: React.FC = () => {
               People Management
             </h1>
             <p className="text-muted-foreground mt-2 text-sm sm:text-base">
-              Add and manage people with their contribution amounts
+              View people and their contributions
             </p>
           </div>
-          <Button onClick={() => setIsAddModalOpen(true)} className="w-full sm:w-auto">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Person
-          </Button>
+          {isAdmin && (
+            <Button onClick={() => setIsAddModalOpen(true)} className="w-full sm:w-auto">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Person
+            </Button>
+          )}
         </div>
 
         {/* Summary Stats */}
@@ -228,7 +216,7 @@ export const People: React.FC = () => {
             <p className="text-muted-foreground mb-4">
               {searchTerm ? 'No people match your search criteria.' : 'No people have been added yet.'}
             </p>
-            {!searchTerm && (
+            {!searchTerm && isAdmin && (
               <Button onClick={() => setIsAddModalOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add First Person
