@@ -38,7 +38,6 @@ export const DonationModal: React.FC<DonationModalProps> = ({
   const [selectedAdminId, setSelectedAdminId] = useState('');
   const [donorName, setDonorName] = useState('');
   const [donorPhone, setDonorPhone] = useState('');
-  const [itemsDonated, setItemsDonated] = useState('');
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -115,7 +114,6 @@ export const DonationModal: React.FC<DonationModalProps> = ({
       setSelectedAdminId('');
       setDonorName('');
       setDonorPhone('');
-      setItemsDonated('');
       setQrCodeUrl('');
       onClose();
     } catch (error) {
@@ -163,15 +161,6 @@ export const DonationModal: React.FC<DonationModalProps> = ({
                   value={donorPhone}
                   onChange={(e) => setDonorPhone(e.target.value)}
                   placeholder="Enter your phone number"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="itemsDonated">Items Donated</Label>
-                <Input
-                  id="itemsDonated"
-                  value={itemsDonated}
-                  onChange={(e) => setItemsDonated(e.target.value)}
-                  placeholder="Enter items donated (e.g., Flowers, Fruits, etc.)"
                 />
               </div>
             </CardContent>

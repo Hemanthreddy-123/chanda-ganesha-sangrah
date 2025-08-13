@@ -6,11 +6,18 @@ import { useActivityLogger } from './useActivityLogger';
 export interface PersonRecord {
   id: string;
   name: string;
+  phone_number: string;
+  address: string;
+  email?: string;
+  emergency_contact?: string;
+  emergency_phone?: string;
+  registration_date: string;
   total_donations: number;
+  last_donation_date?: string;
   preferred_payment_method: string;
   admin_id: string;
   admin_name: string;
-  upi_id?: string;
+  notes?: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -61,9 +68,9 @@ export const useEnhancedPeople = () => {
         tableAffected: 'people_management',
         recordId: data.id,
         metadata: {
-          upi_id: person.upi_id,
-          payment_method: person.preferred_payment_method,
-          amount: person.total_donations
+          phone: person.phone_number,
+          address: person.address,
+          payment_method: person.preferred_payment_method
         }
       });
 
@@ -113,7 +120,8 @@ export const useEnhancedPeople = () => {
       const updatedDonations = person.total_donations + donationAmount;
       
       return await updatePerson(personId, {
-        total_donations: updatedDonations
+        total_donations: updatedDonations,
+        last_donation_date: new Date().toISOString().split('T')[0]
       });
     } catch (error) {
       console.error('Error updating donation stats:', error);

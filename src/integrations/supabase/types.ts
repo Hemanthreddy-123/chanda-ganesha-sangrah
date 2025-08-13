@@ -327,7 +327,6 @@ export type Database = {
           donor_name: string | null
           donor_phone: string | null
           id: string
-          items_donated: string | null
           payment_method: string
           person_id: string | null
           person_name: string
@@ -340,7 +339,6 @@ export type Database = {
           donor_name?: string | null
           donor_phone?: string | null
           id?: string
-          items_donated?: string | null
           payment_method: string
           person_id?: string | null
           person_name: string
@@ -353,7 +351,6 @@ export type Database = {
           donor_name?: string | null
           donor_phone?: string | null
           id?: string
-          items_donated?: string | null
           payment_method?: string
           person_id?: string | null
           person_name?: string
@@ -380,7 +377,6 @@ export type Database = {
           description: string
           donor_phone: string | null
           id: string
-          items_donated: string | null
           payment_method: string | null
           person_id: string | null
           person_name: string | null
@@ -396,7 +392,6 @@ export type Database = {
           description: string
           donor_phone?: string | null
           id?: string
-          items_donated?: string | null
           payment_method?: string | null
           person_id?: string | null
           person_name?: string | null
@@ -412,7 +407,6 @@ export type Database = {
           description?: string
           donor_phone?: string | null
           id?: string
-          items_donated?: string | null
           payment_method?: string | null
           person_id?: string | null
           person_name?: string | null
@@ -423,40 +417,61 @@ export type Database = {
       }
       people_management: {
         Row: {
+          address: string
           admin_id: string
           admin_name: string
           created_at: string
+          email: string | null
+          emergency_contact: string | null
+          emergency_phone: string | null
           id: string
           is_active: boolean | null
+          last_donation_date: string | null
           name: string
+          notes: string | null
+          phone_number: string
           preferred_payment_method: string | null
+          registration_date: string | null
           total_donations: number | null
           updated_at: string
-          upi_id: string | null
         }
         Insert: {
+          address: string
           admin_id: string
           admin_name: string
           created_at?: string
+          email?: string | null
+          emergency_contact?: string | null
+          emergency_phone?: string | null
           id?: string
           is_active?: boolean | null
+          last_donation_date?: string | null
           name: string
+          notes?: string | null
+          phone_number: string
           preferred_payment_method?: string | null
+          registration_date?: string | null
           total_donations?: number | null
           updated_at?: string
-          upi_id?: string | null
         }
         Update: {
+          address?: string
           admin_id?: string
           admin_name?: string
           created_at?: string
+          email?: string | null
+          emergency_contact?: string | null
+          emergency_phone?: string | null
           id?: string
           is_active?: boolean | null
+          last_donation_date?: string | null
           name?: string
+          notes?: string | null
+          phone_number?: string
           preferred_payment_method?: string | null
+          registration_date?: string | null
           total_donations?: number | null
           updated_at?: string
-          upi_id?: string | null
         }
         Relationships: []
       }

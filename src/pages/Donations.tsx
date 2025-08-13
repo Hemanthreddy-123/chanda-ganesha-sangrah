@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { AddCollectionModal } from '@/components/AddCollectionModal';
 import { AddExpenseModal } from '@/components/AddExpenseModal';
 import { AddBookcashModal } from '@/components/AddBookcashModal';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -22,6 +21,7 @@ import {
   Wallet,
   Receipt
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Admin contact mapping
 const ADMIN_PHONES: Record<string, string> = {
