@@ -460,6 +460,39 @@ export type Database = {
         }
         Relationships: []
       }
+      people_tracker: {
+        Row: {
+          admin_id: string
+          admin_name: string
+          amount: number
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          upi_id: string | null
+        }
+        Insert: {
+          admin_id: string
+          admin_name: string
+          amount?: number
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          upi_id?: string | null
+        }
+        Update: {
+          admin_id?: string
+          admin_name?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          upi_id?: string | null
+        }
+        Relationships: []
+      }
       persons: {
         Row: {
           admin_id: string

@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 interface PeopleRecord {
   id: string;
   name: string;
-  total_donations: number;
+  amount: number;
   upi_id?: string;
   admin_id: string;
   admin_name: string;
@@ -39,7 +39,7 @@ export const People: React.FC = () => {
   const loadPeople = async () => {
     try {
       const { data, error } = await supabase
-        .from('people_management')
+        .from('people_tracker')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -68,15 +68,13 @@ export const People: React.FC = () => {
 
     try {
       const { error } = await supabase
-        .from('people_management')
+        .from('people_tracker')
         .insert({
           name: formData.name,
           upi_id: formData.upi_id || null,
           admin_id: user.id,
           admin_name: profile.name,
-          total_donations: Number(formData.amount),
-          preferred_payment_method: 'cash',
-          is_active: true
+          amount: Number(formData.amount)
         });
 
       if (error) throw error;
@@ -96,7 +94,7 @@ export const People: React.FC = () => {
     person.admin_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalAmount = people.reduce((sum, person) => sum + Number(person.total_donations || 0), 0);
+  const totalAmount = people.reduce((sum, person) => sum + Number(person.amount || 0), 0);
 
   if (!user) {
     return (
@@ -209,7 +207,7 @@ export const People: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Amount:</span>
-                      <span className="text-lg font-bold text-primary">₹{person.total_donations}</span>
+                      <span className="text-lg font-bold text-primary">₹{person.amount}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Added by:</span>
