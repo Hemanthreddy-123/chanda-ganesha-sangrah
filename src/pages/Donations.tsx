@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { AddCollectionModal } from '@/components/AddCollectionModal';
 import { AddExpenseModal } from '@/components/AddExpenseModal';
 import { AddBookcashModal } from '@/components/AddBookcashModal';
+import { AddDonorModal } from '@/components/AddDonorModal';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -19,7 +20,8 @@ import {
   Plus,
   Minus,
   Wallet,
-  Receipt
+  Receipt,
+  Gift
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,6 +44,7 @@ export const Donations: React.FC = () => {
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isBookcashModalOpen, setIsBookcashModalOpen] = useState(false);
+  const [isDonorModalOpen, setIsDonorModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -270,6 +273,14 @@ export const Donations: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-2">
             {profile && (
               <>
+                <Button onClick={() => navigate('/people')} variant="secondary" className="w-full sm:w-auto">
+                  <Users className="w-4 h-4 mr-2" />
+                  People
+                </Button>
+                <Button onClick={() => setIsDonorModalOpen(true)} className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700">
+                  <Gift className="w-4 h-4 mr-2" />
+                  Add Donor
+                </Button>
                 <Button onClick={() => setIsCollectionModalOpen(true)} className="w-full sm:w-auto">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Collection
@@ -609,6 +620,12 @@ export const Donations: React.FC = () => {
           open={isBookcashModalOpen}
           onOpenChange={setIsBookcashModalOpen}
           onBookcashAdded={loadAllData}
+        />
+
+        <AddDonorModal
+          isOpen={isDonorModalOpen}
+          onClose={() => setIsDonorModalOpen(false)}
+          onSuccess={loadAllData}
         />
       </div>
     </div>

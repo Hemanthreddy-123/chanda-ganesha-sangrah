@@ -6,6 +6,7 @@ import { PersonCard } from '@/components/PersonCard';
 import { ContactInfo } from '@/components/ContactInfo';
 import FinancialSummary from '@/components/FinancialSummary';
 import ScheduleManagement from '@/components/ScheduleManagement';
+import { DonorInformation } from '@/components/DonorInformation';
 import { LoginModal } from '@/components/LoginModal';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -118,6 +119,13 @@ export const Home = () => {
       <section className="py-12 sm:py-16 px-4">
         <div className="container mx-auto">
           <ScheduleManagement />
+        </div>
+      </section>
+
+      {/* Donor Information */}
+      <section className="py-12 sm:py-16 px-4 bg-muted/30">
+        <div className="container mx-auto">
+          <DonorInformation />
         </div>
       </section>
 
