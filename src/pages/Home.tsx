@@ -7,6 +7,7 @@ import { ContactInfo } from '@/components/ContactInfo';
 import FinancialSummary from '@/components/FinancialSummary';
 import ScheduleManagement from '@/components/ScheduleManagement';
 import { LoginModal } from '@/components/LoginModal';
+import { DonorInformation } from '@/components/DonorInformation';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Person } from '@/types/supabase';
@@ -46,7 +47,6 @@ export const Home = () => {
 
   const filteredPersons = persons.filter(person =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    person.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
     person.admin_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -121,6 +121,13 @@ export const Home = () => {
         </div>
       </section>
 
+      {/* Donor Information */}
+      <section className="py-12 sm:py-16 px-4 bg-muted/30">
+        <div className="container mx-auto">
+          <DonorInformation />
+        </div>
+      </section>
+
       {/* Search and Filter */}
       <section className="py-6 sm:py-8 px-4">
         <div className="container mx-auto">
@@ -135,7 +142,7 @@ export const Home = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <Input
               type="text"
-              placeholder="Search by name, address, or admin..."
+              placeholder="Search by name or admin..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-12 py-2 sm:py-3 text-base sm:text-lg"
