@@ -48,7 +48,7 @@ export const People: React.FC = () => {
       const { data, error } = await supabase
         .from('people_tracker')
         .select('*')
-        .order('priority_order', { ascending: true })
+        .order('amount', { ascending: false })
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -84,7 +84,7 @@ export const People: React.FC = () => {
           admin_name: profile.name,
           amount: Number(formData.amount),
           payment_status: 'pending',
-          priority_order: 4
+          priority_order: 1
         });
 
       if (error) throw error;
@@ -242,7 +242,7 @@ export const People: React.FC = () => {
 
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Priority:</span>
-                      <Badge variant="outline">#{person.priority_order || 4}</Badge>
+                      <Badge variant="outline">#{person.priority_order || 1}</Badge>
                     </div>
                     
                     <div className="flex justify-between items-center">
