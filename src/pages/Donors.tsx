@@ -3,12 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Search, Gift, Phone, Calendar, Plus } from 'lucide-react';
+import { ArrowLeft, Search, Gift, Phone, Calendar, Plus, Edit } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { EditDonorModal } from '@/components/EditDonorModal';
 
 interface Donor {
   id: string;
@@ -18,6 +19,7 @@ interface Donor {
   amount: number;
   receiving_admin_name: string;
   created_at: string;
+  priority_order?: number;
 }
 
 export const Donors: React.FC = () => {
@@ -27,6 +29,7 @@ export const Donors: React.FC = () => {
   const [donors, setDonors] = useState<Donor[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [editingDonor, setEditingDonor] = useState<Donor | null>(null);
 
   useEffect(() => {
     loadDonors();
@@ -38,6 +41,7 @@ export const Donors: React.FC = () => {
         .from('donations')
         .select('*')
         .not('items_donated', 'is', null)
+        .order('priority_order', { ascending: true })
         .order('amount', { ascending: false })
         .order('created_at', { ascending: false });
 
@@ -48,6 +52,28 @@ export const Donors: React.FC = () => {
       toast.error('Failed to load donors data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdateDonor = async (id: string, updates: Partial<Donor>) => {
+    if (!user || !profile || !isAdmin) {
+      toast.error('Only admins can edit donors');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('donations')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success('Donor updated successfully!');
+      loadDonors();
+    } catch (error) {
+      console.error('Error updating donor:', error);
+      toast.error('Failed to update donor');
     }
   };
 
@@ -173,6 +199,11 @@ export const Donors: React.FC = () => {
                         </Badge>
                       </div>
                     )}
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Priority:</span>
+                      <Badge variant="outline">#{donor.priority_order || 1}</Badge>
+                    </div>
                     
                     <div className="flex justify-between items-center text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
@@ -181,6 +212,19 @@ export const Donors: React.FC = () => {
                       </span>
                       <span>By: {donor.receiving_admin_name}</span>
                     </div>
+
+                    {isAdmin && (
+                      <div className="flex justify-end">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setEditingDonor(donor)}
+                        >
+                          <Edit className="w-3 h-3 mr-1" />
+                          Edit
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -200,6 +244,16 @@ export const Donors: React.FC = () => {
               </Button>
             )}
           </div>
+        )}
+
+        {/* Edit Donor Modal */}
+        {editingDonor && (
+          <EditDonorModal
+            isOpen={!!editingDonor}
+            onClose={() => setEditingDonor(null)}
+            donor={editingDonor}
+            onUpdate={handleUpdateDonor}
+          />
         )}
       </div>
     </div>

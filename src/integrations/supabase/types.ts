@@ -331,6 +331,7 @@ export type Database = {
           payment_method: string
           person_id: string | null
           person_name: string
+          priority_order: number | null
           receiving_admin_id: string
           receiving_admin_name: string
         }
@@ -344,6 +345,7 @@ export type Database = {
           payment_method: string
           person_id?: string | null
           person_name: string
+          priority_order?: number | null
           receiving_admin_id: string
           receiving_admin_name: string
         }
@@ -357,6 +359,7 @@ export type Database = {
           payment_method?: string
           person_id?: string | null
           person_name?: string
+          priority_order?: number | null
           receiving_admin_id?: string
           receiving_admin_name?: string
         }
