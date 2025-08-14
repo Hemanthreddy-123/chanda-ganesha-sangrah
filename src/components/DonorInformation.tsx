@@ -59,7 +59,6 @@ export const DonorInformation: React.FC = () => {
       const { data, error } = await supabase
         .from('people_tracker')
         .select('*')
-        .order('priority_order', { ascending: false })
         .order('amount', { ascending: false });
 
       if (error) throw error;
