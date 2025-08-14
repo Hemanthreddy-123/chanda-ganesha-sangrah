@@ -240,10 +240,6 @@ export const People: React.FC = () => {
                       </Badge>
                     </div>
 
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Priority:</span>
-                      <Badge variant="outline">#{person.priority_order || 1}</Badge>
-                    </div>
                     
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Added by:</span>
