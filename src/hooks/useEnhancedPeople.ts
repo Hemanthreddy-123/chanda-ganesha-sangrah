@@ -12,6 +12,8 @@ export interface PersonRecord {
   admin_name: string;
   preferred_payment_method: string;
   is_active: boolean;
+  payment_status?: 'paid' | 'pending';
+  priority_order?: number;
   created_at: string;
   updated_at: string;
 }
@@ -27,6 +29,7 @@ export const useEnhancedPeople = () => {
       const { data, error } = await supabase
         .from('people_management')
         .select('*')
+        .order('priority_order', { ascending: false })
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -124,7 +127,13 @@ export const useEnhancedPeople = () => {
   const getTopDonors = (limit: number = 10) => {
     return [...people]
       .filter(person => person.is_active && person.total_donations > 0)
-      .sort((a, b) => b.total_donations - a.total_donations)
+      .sort((a, b) => {
+        // First sort by priority_order (higher first), then by donations
+        if (a.priority_order !== b.priority_order) {
+          return (b.priority_order || 0) - (a.priority_order || 0);
+        }
+        return b.total_donations - a.total_donations;
+      })
       .slice(0, limit);
   };
 

@@ -7,6 +7,7 @@ import { AddCollectionModal } from '@/components/AddCollectionModal';
 import { AddExpenseModal } from '@/components/AddExpenseModal';
 import { AddBookcashModal } from '@/components/AddBookcashModal';
 import { AddDonorModal } from '@/components/AddDonorModal';
+import { PaymentStatusManager } from '@/components/PaymentStatusManager';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -627,6 +628,13 @@ export const Donations: React.FC = () => {
           onClose={() => setIsDonorModalOpen(false)}
           onSuccess={loadAllData}
         />
+
+        {/* Payment Status Management Section - Only for Admins */}
+        {profile && (
+          <div className="mt-8">
+            <PaymentStatusManager />
+          </div>
+        )}
       </div>
     </div>
   );
