@@ -35,8 +35,7 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
     name: person.name,
     amount: person.amount.toString(),
     upi_id: person.upi_id || '',
-    payment_status: person.payment_status || 'pending',
-    priority_order: person.priority_order?.toString() || '0'
+    payment_status: person.payment_status || 'pending'
   });
   const [loading, setLoading] = useState(false);
 
@@ -49,8 +48,7 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
         name: formData.name,
         amount: Number(formData.amount),
         upi_id: formData.upi_id || null,
-        payment_status: formData.payment_status,
-        priority_order: Number(formData.priority_order)
+        payment_status: formData.payment_status
       });
       
       toast.success('Person updated successfully!');
@@ -122,21 +120,6 @@ export const EditPersonModal: React.FC<EditPersonModalProps> = ({
             </Select>
           </div>
 
-          <div>
-            <Label htmlFor="priority_order">Priority Order</Label>
-            <Input
-              id="priority_order"
-              type="number"
-              value={formData.priority_order}
-              onChange={(e) => setFormData(prev => ({ ...prev, priority_order: e.target.value }))}
-              placeholder="Enter priority (1=highest, 4=lowest)"
-              min="1"
-              max="10"
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              Lower numbers = higher priority (1 = highest priority)
-            </p>
-          </div>
           
           <div className="flex gap-2 pt-4">
             <Button type="submit" disabled={loading} className="flex-1">

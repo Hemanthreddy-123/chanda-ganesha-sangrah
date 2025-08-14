@@ -239,7 +239,6 @@ export const People: React.FC = () => {
                         {person.payment_status === 'paid' ? 'Paid' : 'Pending'}
                       </Badge>
                     </div>
-
                     
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Added by:</span>
