@@ -3,14 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Plus, Search, IndianRupee, Users, Edit, CheckCircle, Clock } from 'lucide-react';
+import { ArrowLeft, Plus, Search, IndianRupee, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { EditPersonModal } from '@/components/EditPersonModal';
 
 interface PeopleRecord {
   id: string;
@@ -20,8 +18,6 @@ interface PeopleRecord {
   admin_id: string;
   admin_name: string;
   created_at: string;
-  payment_status?: string;
-  priority_order?: number;
 }
 
 export const People: React.FC = () => {
@@ -32,7 +28,6 @@ export const People: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingPerson, setEditingPerson] = useState<PeopleRecord | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     amount: '',
@@ -48,7 +43,6 @@ export const People: React.FC = () => {
       const { data, error } = await supabase
         .from('people_tracker')
         .select('*')
-        .order('amount', { ascending: false })
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -82,9 +76,7 @@ export const People: React.FC = () => {
           upi_id: formData.upi_id || null,
           admin_id: user.id,
           admin_name: profile.name,
-          amount: Number(formData.amount),
-          payment_status: 'pending',
-          priority_order: 1
+          amount: Number(formData.amount)
         });
 
       if (error) throw error;
@@ -96,28 +88,6 @@ export const People: React.FC = () => {
     } catch (error) {
       console.error('Error adding person:', error);
       toast.error('Failed to add person');
-    }
-  };
-
-  const handleUpdatePerson = async (id: string, updates: Partial<PeopleRecord>) => {
-    if (!user || !profile || !isAdmin) {
-      toast.error('Only admins can edit people');
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('people_tracker')
-        .update(updates)
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast.success('Person updated successfully!');
-      loadPeople();
-    } catch (error) {
-      console.error('Error updating person:', error);
-      toast.error('Failed to update person');
     }
   };
 
@@ -222,43 +192,17 @@ export const People: React.FC = () => {
                   )}
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Amount:</span>
                       <span className="text-lg font-bold text-primary">₹{person.amount}</span>
                     </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Payment Status:</span>
-                      <Badge variant={person.payment_status === 'paid' ? 'default' : 'secondary'}>
-                        {person.payment_status === 'paid' ? (
-                          <CheckCircle className="w-3 h-3 mr-1" />
-                        ) : (
-                          <Clock className="w-3 h-3 mr-1" />
-                        )}
-                        {person.payment_status === 'paid' ? 'Paid' : 'Pending'}
-                      </Badge>
-                    </div>
-                    
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">Added by:</span>
                       <span className="text-sm font-medium">{person.admin_name}</span>
                     </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(person.created_at).toLocaleDateString('en-IN')}
-                      </span>
-                      {isAdmin && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setEditingPerson(person)}
-                        >
-                          <Edit className="w-3 h-3 mr-1" />
-                          Edit
-                        </Button>
-                      )}
+                    <div className="text-xs text-muted-foreground">
+                      {new Date(person.created_at).toLocaleDateString('en-IN')}
                     </div>
                   </div>
                 </CardContent>
@@ -279,16 +223,6 @@ export const People: React.FC = () => {
               </Button>
             )}
           </div>
-        )}
-
-        {/* Edit Person Modal */}
-        {editingPerson && (
-          <EditPersonModal
-            isOpen={!!editingPerson}
-            onClose={() => setEditingPerson(null)}
-            person={editingPerson}
-            onUpdate={handleUpdatePerson}
-          />
         )}
 
         {/* Add Person Modal */}

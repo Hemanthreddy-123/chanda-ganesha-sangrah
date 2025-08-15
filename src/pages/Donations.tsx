@@ -277,10 +277,6 @@ export const Donations: React.FC = () => {
                   <Users className="w-4 h-4 mr-2" />
                   People
                 </Button>
-                <Button onClick={() => navigate('/donors')} variant="secondary" className="w-full sm:w-auto">
-                  <Gift className="w-4 h-4 mr-2" />
-                  Donors
-                </Button>
                 <Button onClick={() => setIsDonorModalOpen(true)} className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700">
                   <Gift className="w-4 h-4 mr-2" />
                   Add Donor

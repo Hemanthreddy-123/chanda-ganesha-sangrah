@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
+  // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
@@ -331,7 +331,6 @@ export type Database = {
           payment_method: string
           person_id: string | null
           person_name: string
-          priority_order: number | null
           receiving_admin_id: string
           receiving_admin_name: string
         }
@@ -345,7 +344,6 @@ export type Database = {
           payment_method: string
           person_id?: string | null
           person_name: string
-          priority_order?: number | null
           receiving_admin_id: string
           receiving_admin_name: string
         }
@@ -359,7 +357,6 @@ export type Database = {
           payment_method?: string
           person_id?: string | null
           person_name?: string
-          priority_order?: number | null
           receiving_admin_id?: string
           receiving_admin_name?: string
         }
@@ -432,9 +429,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
-          payment_status: string | null
           preferred_payment_method: string | null
-          priority_order: number | null
           total_donations: number | null
           updated_at: string
           upi_id: string | null
@@ -446,9 +441,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
-          payment_status?: string | null
           preferred_payment_method?: string | null
-          priority_order?: number | null
           total_donations?: number | null
           updated_at?: string
           upi_id?: string | null
@@ -460,9 +453,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
-          payment_status?: string | null
           preferred_payment_method?: string | null
-          priority_order?: number | null
           total_donations?: number | null
           updated_at?: string
           upi_id?: string | null
@@ -477,8 +468,6 @@ export type Database = {
           created_at: string
           id: string
           name: string
-          payment_status: string | null
-          priority_order: number | null
           updated_at: string
           upi_id: string | null
         }
@@ -489,8 +478,6 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
-          payment_status?: string | null
-          priority_order?: number | null
           updated_at?: string
           upi_id?: string | null
         }
@@ -501,8 +488,6 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
-          payment_status?: string | null
-          priority_order?: number | null
           updated_at?: string
           upi_id?: string | null
         }
@@ -729,7 +714,7 @@ export type Database = {
     }
     Functions: {
       approve_admin: {
-        Args: { approver_id: string; target_user_id: string }
+        Args: { target_user_id: string; approver_id: string }
         Returns: boolean
       }
       get_approved_admin_count: {
@@ -738,21 +723,21 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
         }
         Returns: boolean
       }
       log_activity: {
         Args: {
-          activity_type_param: string
           admin_id_param: string
           admin_name_param: string
-          amount_param?: number
+          activity_type_param: string
           description_param: string
           metadata_param?: Json
-          record_id_param?: string
           table_affected_param?: string
+          record_id_param?: string
+          amount_param?: number
         }
         Returns: string
       }
