@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,16 +9,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { toast } from 'sonner';
 
-interface AddDonorModalProps {
+interface Donor {
+  id: string;
+  donor_name: string;
+  donor_phone?: string;
+  items_donated?: string;
+  amount: number;
+  priority_order?: number;
+  receiving_admin_name: string;
+  created_at: string;
+}
+
+interface EditDonorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  donor: Donor;
 }
 
-export const AddDonorModal: React.FC<AddDonorModalProps> = ({
+export const EditDonorModal: React.FC<EditDonorModalProps> = ({
   isOpen,
   onClose,
-  onSuccess
+  onSuccess,
+  donor
 }) => {
   const { user, profile } = useAuth();
   const [formData, setFormData] = useState({
@@ -30,11 +43,23 @@ export const AddDonorModal: React.FC<AddDonorModalProps> = ({
   });
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (donor) {
+      setFormData({
+        donor_name: donor.donor_name || '',
+        donor_phone: donor.donor_phone || '',
+        items_donated: donor.items_donated || '',
+        amount: donor.amount?.toString() || '',
+        priority_order: (donor.priority_order || 1).toString()
+      });
+    }
+  }, [donor]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!user || !profile) {
-      toast.error('Please login to add donors');
+      toast.error('Please login to edit donors');
       return;
     }
 
@@ -47,56 +72,47 @@ export const AddDonorModal: React.FC<AddDonorModalProps> = ({
     try {
       const { error } = await supabase
         .from('donations')
-        .insert({
+        .update({
           donor_name: formData.donor_name,
           donor_phone: formData.donor_phone || null,
           items_donated: formData.items_donated,
           amount: Number(formData.amount) || 0,
-          priority_order: Number(formData.priority_order),
-          receiving_admin_id: user.id,
-          receiving_admin_name: profile.name,
-          person_name: formData.donor_name,
-          payment_method: 'items'
-        });
+          priority_order: Number(formData.priority_order)
+        })
+        .eq('id', donor.id);
 
       if (error) throw error;
 
-      toast.success('Donor added successfully!');
-      setFormData({
-        donor_name: '',
-        donor_phone: '',
-        items_donated: '',
-        amount: '',
-        priority_order: '1'
-      });
+      toast.success('Donor updated successfully!');
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Error adding donor:', error);
-      toast.error('Failed to add donor');
+      console.error('Error updating donor:', error);
+      toast.error('Failed to update donor');
     } finally {
       setLoading(false);
     }
   };
 
   const handleClose = () => {
-    setFormData({
-      donor_name: '',
-      donor_phone: '',
-      items_donated: '',
-      amount: '',
-      priority_order: '1'
-    });
     onClose();
   };
+
+  const priorityOptions = [
+    { value: '1', label: '1 - Highest Priority', color: 'text-red-600' },
+    { value: '2', label: '2 - High Priority', color: 'text-orange-600' },
+    { value: '3', label: '3 - Medium Priority', color: 'text-yellow-600' },
+    { value: '4', label: '4 - Low Priority', color: 'text-blue-600' },
+    { value: '5', label: '5 - Lowest Priority', color: 'text-green-600' }
+  ];
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Donor</DialogTitle>
+          <DialogTitle>Edit Donor</DialogTitle>
           <DialogDescription>
-            Add a new donor with their contributed items
+            Update donor information and priority level
           </DialogDescription>
         </DialogHeader>
         
@@ -156,28 +172,18 @@ export const AddDonorModal: React.FC<AddDonorModalProps> = ({
                 <SelectValue placeholder="Select priority level" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">
-                  <span className="text-red-600">1 - Highest Priority</span>
-                </SelectItem>
-                <SelectItem value="2">
-                  <span className="text-orange-600">2 - High Priority</span>
-                </SelectItem>
-                <SelectItem value="3">
-                  <span className="text-yellow-600">3 - Medium Priority</span>
-                </SelectItem>
-                <SelectItem value="4">
-                  <span className="text-blue-600">4 - Low Priority</span>
-                </SelectItem>
-                <SelectItem value="5">
-                  <span className="text-green-600">5 - Lowest Priority</span>
-                </SelectItem>
+                {priorityOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    <span className={option.color}>{option.label}</span>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           
           <div className="flex gap-2 pt-4">
             <Button type="submit" disabled={loading} className="flex-1">
-              {loading ? 'Adding...' : 'Add Donor'}
+              {loading ? 'Updating...' : 'Update Donor'}
             </Button>
             <Button type="button" variant="outline" onClick={handleClose} className="flex-1">
               Cancel
