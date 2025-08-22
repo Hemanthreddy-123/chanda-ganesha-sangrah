@@ -43,6 +43,28 @@ export const Donors: React.FC = () => {
 
   useEffect(() => {
     loadDonors();
+
+    // Set up real-time subscription for donations
+    const channel = supabase
+      .channel('donations-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'donations',
+          filter: 'items_donated=not.is.null'
+        },
+        (payload) => {
+          console.log('Donor change detected:', payload);
+          loadDonors(); // Reload donors when any change occurs
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadDonors = async () => {
@@ -151,8 +173,15 @@ export const Donors: React.FC = () => {
           />
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        {/* Real-time Status & Stats */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span>Live updates enabled - Changes reflect in real-time</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
           <Card className="festival-card">
             <CardContent className="text-center py-4">
               <Gift className="w-8 h-8 text-primary mx-auto mb-2" />
@@ -162,9 +191,18 @@ export const Donors: React.FC = () => {
           </Card>
           <Card className="festival-card">
             <CardContent className="text-center py-4">
+              <Star className="w-8 h-8 text-red-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-red-600">
+                {donors.filter(d => d.priority_order === 1).length}
+              </div>
+              <div className="text-sm text-muted-foreground">Highest Priority</div>
+            </CardContent>
+          </Card>
+          <Card className="festival-card">
+            <CardContent className="text-center py-4">
               <Star className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-yellow-600">
-                {donors.filter(d => d.priority_order === 1).length}
+                {donors.filter(d => d.priority_order === 2).length}
               </div>
               <div className="text-sm text-muted-foreground">High Priority</div>
             </CardContent>
@@ -223,9 +261,17 @@ export const Donors: React.FC = () => {
                           {donor.donor_phone}
                         </CardDescription>
                       )}
-                      <Badge className={`text-xs ${priorityInfo.color}`}>
-                        Priority: {priorityInfo.label}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge className={`text-xs font-medium ${priorityInfo.color}`}>
+                          <Star className="w-3 h-3 mr-1" />
+                          {priorityInfo.label}
+                        </Badge>
+                        {profile && (
+                          <Badge variant="outline" className="text-xs">
+                            #{donor.priority_order || 1}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>

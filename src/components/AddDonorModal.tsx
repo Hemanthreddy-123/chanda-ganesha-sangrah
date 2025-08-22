@@ -61,7 +61,7 @@ export const AddDonorModal: React.FC<AddDonorModalProps> = ({
 
       if (error) throw error;
 
-      toast.success('Donor added successfully!');
+      toast.success('Donor added successfully! Visible to all admins in real-time.');
       setFormData({
         donor_name: '',
         donor_phone: '',

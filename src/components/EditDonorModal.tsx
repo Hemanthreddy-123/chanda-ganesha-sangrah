@@ -83,7 +83,7 @@ export const EditDonorModal: React.FC<EditDonorModalProps> = ({
 
       if (error) throw error;
 
-      toast.success('Donor updated successfully!');
+      toast.success('Donor updated successfully! Changes are live for all admins.');
       onSuccess();
       onClose();
     } catch (error) {
