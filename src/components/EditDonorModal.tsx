@@ -101,9 +101,8 @@ export const EditDonorModal: React.FC<EditDonorModalProps> = ({
   const priorityOptions = [
     { value: '1', label: '1 - Highest Priority', color: 'text-red-600' },
     { value: '2', label: '2 - High Priority', color: 'text-orange-600' },
-    { value: '3', label: '3 - Medium Priority', color: 'text-yellow-600' },
-    { value: '4', label: '4 - Low Priority', color: 'text-blue-600' },
-    { value: '5', label: '5 - Lowest Priority', color: 'text-green-600' }
+    { value: '3', label: '3 - Low Priority', color: 'text-blue-600' },
+    { value: '4', label: '4 - Lowest Priority', color: 'text-green-600' }
   ];
 
   return (

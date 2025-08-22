@@ -163,13 +163,10 @@ export const AddDonorModal: React.FC<AddDonorModalProps> = ({
                   <span className="text-orange-600">2 - High Priority</span>
                 </SelectItem>
                 <SelectItem value="3">
-                  <span className="text-yellow-600">3 - Medium Priority</span>
+                  <span className="text-blue-600">3 - Low Priority</span>
                 </SelectItem>
                 <SelectItem value="4">
-                  <span className="text-blue-600">4 - Low Priority</span>
-                </SelectItem>
-                <SelectItem value="5">
-                  <span className="text-green-600">5 - Lowest Priority</span>
+                  <span className="text-green-600">4 - Lowest Priority</span>
                 </SelectItem>
               </SelectContent>
             </Select>

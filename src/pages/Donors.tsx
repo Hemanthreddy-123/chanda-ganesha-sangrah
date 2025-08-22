@@ -102,18 +102,16 @@ export const Donors: React.FC = () => {
     const colors = {
       1: 'bg-red-100 text-red-800 border-red-300',
       2: 'bg-orange-100 text-orange-800 border-orange-300', 
-      3: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-      4: 'bg-blue-100 text-blue-800 border-blue-300',
-      5: 'bg-green-100 text-green-800 border-green-300'
+      3: 'bg-blue-100 text-blue-800 border-blue-300',
+      4: 'bg-green-100 text-green-800 border-green-300'
     };
     const labels = {
       1: 'Highest',
       2: 'High', 
-      3: 'Medium',
-      4: 'Low',
-      5: 'Lowest'
+      3: 'Low',
+      4: 'Lowest'
     };
-    return { color: colors[priority as keyof typeof colors] || colors[1], label: labels[priority as keyof typeof labels] || 'Medium' };
+    return { color: colors[priority as keyof typeof colors] || colors[1], label: labels[priority as keyof typeof labels] || 'High' };
   };
 
   if (loading) {
@@ -200,8 +198,8 @@ export const Donors: React.FC = () => {
           </Card>
           <Card className="festival-card">
             <CardContent className="text-center py-4">
-              <Star className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-yellow-600">
+              <Star className="w-8 h-8 text-orange-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-orange-600">
                 {donors.filter(d => d.priority_order === 2).length}
               </div>
               <div className="text-sm text-muted-foreground">High Priority</div>
