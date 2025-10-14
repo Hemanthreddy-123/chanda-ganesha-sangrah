@@ -149,7 +149,7 @@ const ScheduleManagement = () => {
         title: "Success",
         description: "Schedule deleted successfully",
       });
-      
+
       loadSchedules();
     } catch (error: any) {
       console.error('Error deleting schedule:', error);
@@ -217,7 +217,7 @@ const ScheduleManagement = () => {
             Festival Schedule
           </h2>
           <p className="text-muted-foreground">
-            Manage daily schedule and events for Depur Vinayaka Chavithi 2k25
+            Manage daily schedule and events for Jai Shree Ram
           </p>
         </div>
         {profile && (
@@ -268,7 +268,7 @@ const ScheduleManagement = () => {
                     id="title"
                     value={formData.title}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
-                    placeholder="e.g., Ganesh Sthapana, Aarti, Visarjan"
+                    placeholder="e.g., Pooja, Aarti, Visarjan"
                     required
                   />
                 </div>
@@ -393,7 +393,7 @@ const ScheduleManagement = () => {
                   {schedule.description && (
                     <p className="text-muted-foreground">{schedule.description}</p>
                   )}
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                     {(schedule.time_start || schedule.time_end) && (
                       <div className="flex items-center gap-2">
@@ -405,14 +405,14 @@ const ScheduleManagement = () => {
                         </span>
                       </div>
                     )}
-                    
+
                     {schedule.location && (
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-muted-foreground" />
                         <span>{schedule.location}</span>
                       </div>
                     )}
-                    
+
                     {schedule.organizer && (
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-muted-foreground" />
