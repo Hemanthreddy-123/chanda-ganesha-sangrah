@@ -18,15 +18,15 @@ export const Header: React.FC<HeaderProps> = () => {
           {/* Logo and Title */}
           <Link to="/" className="flex items-center space-x-4">
             <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
-              <img 
-                src={lordGaneshImage} 
-                alt="Lord Ganesh" 
+              <img
+                src={lordGaneshImage}
+                alt="Lord Ganesh"
                 className="w-full h-full object-cover"
               />
             </div>
             <div>
               <h1 className="text-2xl font-bold ganesh-gradient bg-clip-text text-transparent">
-                Depur Vinayaka Chavithi 2k25
+                Jai Shree Ram
               </h1>
               <p className="text-sm text-muted-foreground">Festival Collection Portal</p>
             </div>
@@ -36,11 +36,11 @@ export const Header: React.FC<HeaderProps> = () => {
           <div className="flex items-center space-x-4">
             {/* Navigation Links */}
             <div className="flex items-center space-x-4">
-              <Link 
-                to="/donations" 
+              <Link
+                to="/donations"
                 className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-                  location.pathname === '/donations' 
-                    ? 'bg-primary text-primary-foreground' 
+                  location.pathname === '/donations'
+                    ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:text-primary'
                 }`}
               >
@@ -48,21 +48,21 @@ export const Header: React.FC<HeaderProps> = () => {
                 <span className="font-medium">Donations</span>
               </Link>
             </div>
-            
+
             <div className="flex items-center space-x-2 text-primary">
               <Heart className="w-5 h-5" />
-              <span className="font-medium">Ganpati Bappa Morya</span>
+              <span className="font-medium">Jai Shree Ram</span>
             </div>
-            
+
             {user && profile ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2">
                   <User className="w-4 h-4 text-primary" />
                   <span className="font-medium">{profile.name}</span>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={signOut}
                   className="hover:bg-destructive hover:text-destructive-foreground"
                 >
@@ -71,9 +71,9 @@ export const Header: React.FC<HeaderProps> = () => {
                 </Button>
               </div>
             ) : (
-              <Button 
-                variant="default" 
-                size="sm" 
+              <Button
+                variant="default"
+                size="sm"
                 onClick={() => window.location.href = '/auth'}
               >
                 Admin Login
