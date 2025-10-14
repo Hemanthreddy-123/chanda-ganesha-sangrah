@@ -138,7 +138,7 @@ export const AdminDashboard: React.FC = () => {
         <h1 className="text-3xl font-bold ganesh-gradient bg-clip-text text-transparent">
           Welcome, {profile.name}
         </h1>
-        <p className="text-muted-foreground mt-2">Manage Depur Vinayaka Chavithi 2k25 Collection</p>
+        <p className="text-muted-foreground mt-2">Manage Jai Shree Ram Collection</p>
       </div>
 
       {/* Advanced Admin Dashboard with Tabs */}
@@ -310,7 +310,7 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="paymentMethod">Payment Method *</Label>
-                    <select 
+                    <select
                       id="paymentMethod"
                       value={newPerson.paymentMethod}
                       onChange={(e) => setNewPerson(prev => ({ ...prev, paymentMethod: e.target.value as 'handcash' | 'phonepay' }))}
