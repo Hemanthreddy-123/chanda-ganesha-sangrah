@@ -4,10 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Phone, MapPin, MessageCircle } from 'lucide-react';
 
 const ADMIN_CONTACTS = [
-  { name: 'Mukkamalla Manohar Reddy', phone: '7569158421', whatsapp: '7569158421' },
-  { name: 'Ravilla Balaji', phone: '8179914192', whatsapp: '8179914192' },
-  { name: 'Siddavatam Harsha', phone: '9392312978', whatsapp: '9392312978' },
-  { name: 'Chagam Madhu Reddy', phone: '7095712647', whatsapp: '7095712647' },
+  { name: 'Mukkamalla Baskar Reddy', phone: '8985011137', whatsapp: '8985011137' },
+  { name: 'Kukkapalli Srinivasulu naidu', phone: '9441843101', whatsapp: '9441843101' },
+  { name: 'Siddavatam venkata ramanareddy', phone: '9441443925', whatsapp: '9441443925' },
 ];
 
 const UPI_ID = "madhureddych10@ybl";
@@ -15,7 +14,7 @@ const UPI_ID = "madhureddych10@ybl";
 export const ContactInfo: React.FC = () => {
   const handleWhatsAppMessage = (phone: string) => {
     const message = encodeURIComponent("Hi! I have donated for Depur Vinayaka Chavithi 2k25. Please find the payment screenshot attached.");
-    window.open(`https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
+    window.open(`https://wa.me/91${phone.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
   };
 
   const copyUpiId = () => {
@@ -81,19 +80,19 @@ export const ContactInfo: React.FC = () => {
                 <CardTitle className="text-lg">{contact.name}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                 <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-2">
-                     <Phone className="w-4 h-4 text-primary" />
-                     <span className="font-mono">+91 {contact.phone}</span>
-                   </div>
-                   <Button 
-                     size="sm" 
-                     variant="outline"
-                     onClick={() => window.open(`tel:+91${contact.phone}`, '_self')}
-                   >
-                     Call
-                   </Button>
-                </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-primary" />
+                      <span className="font-mono">+91 {contact.phone}</span>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => window.open(`tel:+91${contact.phone}`, '_self')}
+                    >
+                      Call
+                    </Button>
+                  </div>
                 <Button 
                   className="w-full" 
                   variant="default"
