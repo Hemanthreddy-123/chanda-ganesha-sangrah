@@ -16,8 +16,7 @@ export const useAuth = () => {
 
 // Predefined admin credentials
 const ADMIN_CREDENTIALS = [
-  { email: 'mukkamalla.baskar.reddy@temple-admin.com', password: 'MBR_Temple_2025!@#', name: 'Mukkamalla Baskar Reddy', id: 'admin1' },
-  { email: 'kukkapalli.srinivasulu.naidu@temple-admin.com', password: 'KSN_Admin_Secure$567', name: 'Kukkapalli Srinivasulu Naidu', id: 'admin2' },
+  { email: 'mukkamalla@gmail.com', password: 'password', password: 'KSN_Admin_Secure$567', name: 'Kukkapalli Srinivasulu Naidu', id: 'admin2' },
   { email: 'siddavatam.venkata.ramanareddy@temple-admin.com', password: 'SVR_Temple_Pass&890', name: 'Siddavatam Venkata Ramanareddy', id: 'admin3' },
 ];
 
