@@ -59,7 +59,7 @@ export const Home = () => {
           {/* Admin Login Button - Hidden on mobile */}
           <div className="absolute top-4 right-4 z-20 hidden sm:block">
             {!user && (
-              <Button 
+              <Button
                 onClick={() => setIsLoginModalOpen(true)}
                 variant="secondary"
                 size="sm"
@@ -72,30 +72,30 @@ export const Home = () => {
           </div>
 
           <div className="mb-6 sm:mb-8">
-            <img 
-              src={lordGaneshImage} 
-              alt="Lord Ganesh" 
+            <img
+              src={lordGaneshImage}
+              alt="Lord Ganesh"
               className="w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-full border-4 border-white shadow-2xl object-cover mb-4 sm:mb-6"
             />
           </div>
-          
+
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 hero-text">
-            Depur Vinayaka Chavithi 2k25
+            Jai Shree Ram
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 hero-text opacity-90">
             Festival Collection & Management System
           </p>
-          
+
           <div className="mt-8 sm:mt-12">
             <p className="text-base sm:text-lg hero-text opacity-90 mb-4">
-              जय श्री गणेश! Welcome to our divine festival celebration
+              Welcome to our divine festival celebration
             </p>
             <p className="text-sm hero-text opacity-75">
               Managing collections with transparency and devotion
             </p>
           </div>
         </div>
-        
+
         {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
           <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full"></div>
@@ -138,7 +138,7 @@ export const Home = () => {
               Our festival participants and their contributions
             </p>
           </div>
-          
+
           <div className="relative mb-6 sm:mb-8 max-w-md mx-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <Input
@@ -173,11 +173,11 @@ export const Home = () => {
               <div className="text-4xl sm:text-6xl mb-4">🎭</div>
               <h3 className="text-xl sm:text-2xl font-semibold mb-4">No People Listed Yet</h3>
               <p className="text-muted-foreground mb-6 max-w-md mx-auto text-sm sm:text-base">
-                The admin team hasn't added any people to the collection list yet. 
+                The admin team hasn't added any people to the collection list yet.
                 Please check back later or contact an admin.
               </p>
               <div className="text-primary font-semibold text-sm sm:text-base">
-                Ganpati Bappa Morya - Mangalmurti Morya
+                Jai Shree Ram
               </div>
             </div>
           ) : (
@@ -198,7 +198,7 @@ export const Home = () => {
       {/* Mobile Admin Login Button */}
       {!user && (
         <div className="fixed bottom-4 right-4 z-50 sm:hidden">
-          <Button 
+          <Button
             onClick={() => setIsLoginModalOpen(true)}
             size="lg"
             className="rounded-full shadow-lg donation-button"
@@ -210,9 +210,9 @@ export const Home = () => {
       )}
 
       {/* Login Modal */}
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
       />
     </div>
   );
