@@ -155,7 +155,7 @@ RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO public.profiles (user_id, name, email)
   VALUES (
-    NEW.id, 
+    NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'name', NEW.email),
     NEW.email
   );
@@ -171,6 +171,6 @@ CREATE TRIGGER on_auth_user_created
 
 -- Insert some sample announcements
 INSERT INTO public.announcements (title, content, priority, created_by) VALUES
-('Vinayaka Chavithi 2025', 'Welcome to Depur Vinayaka Chavithi festival collection! Ganpati Bappa Morya!', 1, gen_random_uuid()),
+('Jai Shree Ram', 'Welcome to the festival collection! Jai Shree Ram!', 1, gen_random_uuid()),
 ('Collection Update', 'Daily collection reports are now available in the donations section.', 2, gen_random_uuid()),
 ('Festival Schedule', 'Main festival celebrations start from tomorrow. All admins please be present.', 3, gen_random_uuid());
