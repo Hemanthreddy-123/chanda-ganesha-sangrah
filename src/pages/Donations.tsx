@@ -9,11 +9,11 @@ import { AddBookcashModal } from '@/components/AddBookcashModal';
 import { AddDonorModal } from '@/components/AddDonorModal';
 import { useAuth } from '@/context/SupabaseAuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  IndianRupee, 
-  TrendingUp, 
-  Calendar, 
-  Users, 
+import {
+  IndianRupee,
+  TrendingUp,
+  Calendar,
+  Users,
   Search,
   ArrowLeft,
   Download,
@@ -27,10 +27,9 @@ import { useNavigate } from 'react-router-dom';
 
 // Admin contact mapping
 const ADMIN_PHONES: Record<string, string> = {
-  'Mukkamalla Manohar Reddy': '7569158421',
-  'Ravilla Balaji': '8179914192',
-  'Siddavatam Harsha': '9392312978',
-  'Chagam Madhu Reddy': '7095712647',
+  'Mukkamalla Baskar Reddy': '8985011137',
+  'Kukkapalli Srinivasulu Naidu': '9441843101',
+  'Siddavatam Venkata Ramanareddy': '9441443925',
 };
 
 export const Donations: React.FC = () => {
@@ -121,7 +120,7 @@ export const Donations: React.FC = () => {
 
   // Group admin data for collections and expenses
   const adminData = new Map();
-  
+
   // Process collections
   collections.forEach(collection => {
     if (!adminData.has(collection.admin_id)) {
@@ -174,7 +173,7 @@ export const Donations: React.FC = () => {
     ];
 
     const csvRows = [];
-    
+
     // Add persons data
     persons.forEach(person => {
       csvRows.push([
@@ -242,7 +241,7 @@ export const Donations: React.FC = () => {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `depur-vinayaka-chavithi-report-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `jai-shree-ram-report-${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -255,8 +254,8 @@ export const Donations: React.FC = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div className="flex-1">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => navigate('/')}
               className="mb-4 w-full sm:w-auto"
             >
@@ -267,7 +266,7 @@ export const Donations: React.FC = () => {
               Collection & Expense Management
             </h1>
             <p className="text-muted-foreground mt-2 text-sm sm:text-base">
-              Track collections, expenses, and available funds for Depur Vinayaka Chavithi 2k25
+              Track collections, expenses, and available funds for Jai Shree Ram
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
@@ -449,7 +448,7 @@ export const Donations: React.FC = () => {
               Member Contributions (₹{totalFromPersons})
             </span>
           </h2>
-          
+
           {/* Search */}
             <div className="relative mb-6">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
