@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/SupabaseAuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Auth from "./pages/Auth";
+import { Auth } from "./pages/Auth";
 import { Donations } from "./pages/Donations";
 import { People } from "./pages/People";
 import { Donors } from "./pages/Donors";
