@@ -7,10 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Mail, Lock, AlertCircle } from 'lucide-react';
 
-const Auth = () => {
+export const Auth = () => {
   const { user, loading, signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-
+  
   // Form state - only sign in
   const [signInForm, setSignInForm] = useState({
     email: '',
@@ -25,9 +25,9 @@ const Auth = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
+    
     await signIn(signInForm.email, signInForm.password);
-
+    
     setIsLoading(false);
   };
 
@@ -75,7 +75,7 @@ const Auth = () => {
                   />
                 </div>
               </div>
-
+              
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -103,7 +103,7 @@ const Auth = () => {
                   </div>
                 </div>
               </div>
-
+              
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Sign In
@@ -115,5 +115,3 @@ const Auth = () => {
     </div>
   );
 };
-
-export default Auth;
