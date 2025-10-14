@@ -20,7 +20,7 @@ export const Header: React.FC<HeaderProps> = () => {
             <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
               <img
                 src={lordGaneshImage}
-                alt="Lord Ganesh"
+                alt="Jai Shree Ram"
                 className="w-full h-full object-cover"
               />
             </div>
