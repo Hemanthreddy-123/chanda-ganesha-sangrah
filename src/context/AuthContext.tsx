@@ -16,10 +16,9 @@ export const useAuth = () => {
 
 // Predefined admin credentials
 const ADMIN_CREDENTIALS = [
-  { email: 'manohar@ganesh.com', password: 'admin123', name: 'Mukkamalla Manohar Reddy', id: 'admin1' },
-  { email: 'balaji@ganesh.com', password: 'admin123', name: 'Ravilla Balaji', id: 'admin2' },
-  { email: 'harsha@ganesh.com', password: 'admin123', name: 'Siddavatam Harsha', id: 'admin3' },
-  { email: 'madhu@ganesh.com', password: 'admin123', name: 'Chagam Madhu Reddy', id: 'admin4' },
+  { email: 'mukkamalla.baskar.reddy@temple-admin.com', password: 'MBR_Temple_2025!@#', name: 'Mukkamalla Baskar Reddy', id: 'admin1' },
+  { email: 'kukkapalli.srinivasulu.naidu@temple-admin.com', password: 'KSN_Admin_Secure$567', name: 'Kukkapalli Srinivasulu Naidu', id: 'admin2' },
+  { email: 'siddavatam.venkata.ramanareddy@temple-admin.com', password: 'SVR_Temple_Pass&890', name: 'Siddavatam Venkata Ramanareddy', id: 'admin3' },
 ];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -53,7 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const adminData = ADMIN_CREDENTIALS.find(
         admin => admin.email === email && admin.password === password
       );
-      
+
       if (!adminData) {
         return false;
       }
@@ -65,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: adminData.name,
         email: adminData.email,
       });
-      
+
       return true;
     } catch (error) {
       console.error('Login error:', error);
