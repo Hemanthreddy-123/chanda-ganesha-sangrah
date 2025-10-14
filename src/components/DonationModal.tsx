@@ -21,17 +21,16 @@ interface DonationModalProps {
 
 // Admin data
 const ADMINS: Admin[] = [
-  { id: 'admin1', name: 'Mukkamalla Manohar Reddy', email: 'manohar@ganesh.com', phoneNumber: '+91 7569158421' },
-  { id: 'admin2', name: 'Ravilla Balaji', email: 'balaji@ganesh.com', phoneNumber: '+91 8179914192' },
-  { id: 'admin3', name: 'Siddavatam Harsha', email: 'harsha@ganesh.com', phoneNumber: '+91 9392312978' },
-  { id: 'admin4', name: 'Chagam Madhu Reddy', email: 'madhu@ganesh.com', phoneNumber: '+91 7095712647' },
+    { id: 'admin1', name: 'Mukkamalla Baskar Reddy', email: 'mukkamalla.baskar.reddy@temple-admin.com', phoneNumber: '+91 8985011137' },
+    { id: 'admin2', name: 'Kukkapalli Srinivasulu Naidu', email: 'kukkapalli.srinivasulu.naidu@temple-admin.com', phoneNumber: '+91 9441843101' },
+    { id: 'admin3', name: 'Siddavatam Venkata Ramanareddy', email: 'siddavatam.venkata.ramanareddy@temple-admin.com', phoneNumber: '+91 9441443925' },
 ];
 
-export const DonationModal: React.FC<DonationModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  person, 
-  onDonationComplete 
+export const DonationModal: React.FC<DonationModalProps> = ({
+  isOpen,
+  onClose,
+  person,
+  onDonationComplete
 }) => {
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'handcash' | 'phonepay'>('handcash');
@@ -50,7 +49,7 @@ export const DonationModal: React.FC<DonationModalProps> = ({
 
   const generateQRCode = async () => {
     try {
-      const upiUrl = `upi://pay?pa=madhureddych10@ybl&pn=Ganesh Fund&am=${amount}&cu=INR&tn=Donation for ${person?.name}`;
+      const upiUrl = `upi://pay?pa=madhureddych10@ybl&pn=Jai Shree Ram Fund&am=${amount}&cu=INR&tn=Donation for ${person?.name}`;
       const qrUrl = await QRCode.toDataURL(upiUrl);
       setQrCodeUrl(qrUrl);
     } catch (error) {
@@ -102,7 +101,7 @@ export const DonationModal: React.FC<DonationModalProps> = ({
       );
 
       onDonationComplete(donation);
-      
+
       toast({
         title: "Donation Successful!",
         description: `₹${amount} donated to ${person.name} via ${paymentMethod === 'handcash' ? 'Hand Cash' : 'PhonePe'}`,
@@ -223,8 +222,8 @@ export const DonationModal: React.FC<DonationModalProps> = ({
           {/* Admin Selection */}
           <div className="space-y-2">
             <Label>
-              {paymentMethod === 'handcash' 
-                ? 'Which admin did you hand the cash to?' 
+              {paymentMethod === 'handcash'
+                ? 'Which admin did you hand the cash to?'
                 : 'Which admin received the online payment?'} *
             </Label>
             <Select value={selectedAdminId} onValueChange={setSelectedAdminId} required>
@@ -250,8 +249,8 @@ export const DonationModal: React.FC<DonationModalProps> = ({
           </div>
 
           {/* Submit Button */}
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={isLoading || !amount || !selectedAdminId}
             className="w-full donation-button"
           >
