@@ -10,7 +10,7 @@ import { Loader2, Mail, Lock, AlertCircle } from 'lucide-react';
 const Auth = () => {
   const { user, loading, signIn } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Form state - only sign in
   const [signInForm, setSignInForm] = useState({
     email: '',
@@ -25,9 +25,9 @@ const Auth = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     await signIn(signInForm.email, signInForm.password);
-    
+
     setIsLoading(false);
   };
 
@@ -44,7 +44,7 @@ const Auth = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-primary mb-2">
-            Depur Vinayaka Chavithi 2025
+            Jai Shree Ram
           </h1>
           <p className="text-muted-foreground">
             Admin Authentication
@@ -75,7 +75,7 @@ const Auth = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -97,14 +97,13 @@ const Auth = () => {
                   <AlertCircle className="w-4 h-4 text-primary mt-0.5" />
                   <div className="text-sm">
                     <p className="font-medium">Authorized Admin Emails:</p>
-                    <p className="text-xs">manoharreddy.mukkamalla@temple-admin.com</p>
-                    <p className="text-xs">balaji.ravilla@temple-admin.com</p>
-                    <p className="text-xs">harsha.siddavatam@temple-admin.com</p>
-                    <p className="text-xs">madhu.chagam@temple-admin.com</p>
+                    <p className="text-xs">mukkamalla.baskar.reddy@temple-admin.com</p>
+                    <p className="text-xs">kukkapalli.srinivasulu.naidu@temple-admin.com</p>
+                    <p className="text-xs">siddavatam.venkata.ramanareddy@temple-admin.com</p>
                   </div>
                 </div>
               </div>
-              
+
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Sign In
