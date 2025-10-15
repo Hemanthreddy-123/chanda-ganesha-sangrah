@@ -88,10 +88,9 @@ INSERT INTO public.user_roles (user_id, role)
 SELECT p.user_id, 'admin'::app_role
 FROM public.profiles p
 WHERE p.email IN (
-  'manoharreddy.mukkamalla@temple-admin.com',
-  'balaji.ravilla@temple-admin.com', 
-  'harsha.siddavatam@temple-admin.com',
-  'madhu.chagam@temple-admin.com'
+   'mukkamalla.baskar.reddy@temple-admin.com',
+'kukkapalli.srinivasulu.naidu@temple-admin.com',
+'siddavatam.venkata.ramanareddy@temple-admin.com'
 ) AND NOT EXISTS (
   SELECT 1 FROM public.user_roles ur 
   WHERE ur.user_id = p.user_id AND ur.role = 'admin'
@@ -107,10 +106,9 @@ AS $$
 BEGIN
   -- Check if user email is in admin list
   IF NEW.email IN (
-    'manoharreddy.mukkamalla@temple-admin.com',
-    'balaji.ravilla@temple-admin.com', 
-    'harsha.siddavatam@temple-admin.com',
-    'madhu.chagam@temple-admin.com'
+     'mukkamalla.baskar.reddy@temple-admin.com',
+'kukkapalli.srinivasulu.naidu@temple-admin.com',
+'siddavatam.venkata.ramanareddy@temple-admin.com'
   ) THEN
     INSERT INTO public.user_roles (user_id, role) 
     VALUES (NEW.user_id, 'admin'::app_role);
