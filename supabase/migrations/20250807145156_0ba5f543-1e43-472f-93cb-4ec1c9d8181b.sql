@@ -3,26 +3,20 @@
 WITH admin_users AS (
   SELECT 
     gen_random_uuid() as user_id,
-    'manoharreddy.mukkamalla@temple-admin.com' as email,
-    'Mukkamalla Manohar Reddy' as name,
-    'MR_Temple_2024!@#' as temp_password
+    'mukkamalla.baskar.reddy@temple-admin.com' as email,
+    'Mukkamalla Baskar Reddy' as name,
+    'MB_Temple_2025!@#' as temp_password
   UNION ALL
   SELECT 
     gen_random_uuid() as user_id,
-    'balaji.ravilla@temple-admin.com' as email,
-    'Ravilla Balaji' as name,
-    'RB_Admin_Secure$567'
+    'kukkapalli.srinivasulu.naidu@temple-admin.com' as email,
+    'Kukkapalli Srinivasulu naidu' as name,
+    'KS_Admin_Secure$567'
   UNION ALL
   SELECT 
     gen_random_uuid() as user_id,
-    'harsha.siddavatam@temple-admin.com' as email,
-    'Siddavatam Harsha' as name,
-    'SH_Temple_Pass&890'
-  UNION ALL
-  SELECT 
-    gen_random_uuid() as user_id,
-    'madhu.chagam@temple-admin.com' as email,
-    'Chagam Madhu Reddy' as name,
+    'siddavatam.venkata.ramanareddy@temple-admin.com' as email,
+    'Siddavatam venkata ramanareddy' as name,
     'CM_Reddy_Key%123'
 )
 INSERT INTO public.profiles (
@@ -60,9 +54,9 @@ CREATE TABLE IF NOT EXISTS public.admin_credentials_reference (
 
 -- Insert the credentials for reference
 INSERT INTO public.admin_credentials_reference (name, email, temp_password) VALUES
-('Mukkamalla Manohar Reddy', 'manoharreddy.mukkamalla@temple-admin.com', 'MR_Temple_2024!@#'),
-('Ravilla Balaji', 'balaji.ravilla@temple-admin.com', 'RB_Admin_Secure$567'),
-('Siddavatam Harsha', 'harsha.siddavatam@temple-admin.com', 'SH_Temple_Pass&890'),
+('Mukkamalla Baskar Reddy', 'mukkamalla.baskar.reddy@temple-admin.com', 'MB_Temple_2025!@#'),
+('Kukkapalli Srinivasulu naidu', 'kukkapalli.srinivasulu.naidu@temple-admin.com', 'KS_Admin_Secure$567'),
+('Siddavatam venkata ramanareddy', 'siddavatam.venkata.ramanareddy@temple-admin.com', 'SR_Temple_Pass&890'),
 ('Chagam Madhu Reddy', 'madhu.chagam@temple-admin.com', 'CM_Reddy_Key%123');
 
 -- Enable RLS on the credentials reference table
