@@ -14,10 +14,9 @@ ON public.profiles
 FOR INSERT
 WITH CHECK (
   email IN (
-    'manoharreddy.mukkamalla@temple-admin.com',
-    'balaji.ravilla@temple-admin.com', 
-    'harsha.siddavatam@temple-admin.com',
-    'madhu.chagam@temple-admin.com'
+    'mukkamalla.baskar.reddy@temple-admin.com',
+'kukkapalli.srinivasulu.naidu@temple-admin.com',
+'siddavatam.venkata.ramanareddy@temple-admin.com'
   )
 );
 
